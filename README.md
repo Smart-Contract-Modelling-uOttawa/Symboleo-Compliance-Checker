@@ -1,11 +1,11 @@
-# Symboleo Text Editor
-An IDE for the formal contract specification Symboleo is created using [Xtext](https://www.eclipse.org/Xtext/).
+# Symboleo Compliance Checker
+A compliance checker for formal contract specifications written in Symboleo is created inspired by [jREC](https://www.inf.unibz.it/~montali/tools.html#jrec).
 
 # What is Symboleo?
 One line explanation.
 
 # Current State
-The current version of the text editor created by Xtext has implemented the syntax of Symboleo. It provides the capability to write Symboleo contract specifications more easily (autofill and syntax highlighting).
+What are the implemented features?
 
 # Future Work
-Static type-checking, scoping and code-generation features will be added in the future.
+What features will be added in the future?
