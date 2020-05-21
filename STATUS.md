@@ -1,2 +1,1 @@
-What kind of badge you are applying for (one of reusable, available, replicated, reproduced) as well as the reasons why you think your artifact deserves that badge.
-Maybe Available (reusable may be too much and the other two might not apply). More deliberation required.
+We apply for Available badge because the tool is almost free of bug, and its source code and executable file is already available for researchers. The tool is theoretically supported with <a href="https://drive.google.com/open?id=1WXwXeLrZdaJjhSJcCrt_wBXxDvhFkq2k">Symbole's paper</a>. In addition, the tool and contract formalization is under development in <a href="https://sites.google.com/uottawa.ca/csmlab/home?authuser=0">CSM lab</a>
