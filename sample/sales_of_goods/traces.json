@@ -1,0 +1,67 @@
+[	
+	{
+		"name": "fulfill delivery, violates payment",
+		"description": "what if Seller delivers meat under appropriate condition, and buyer does not pay ?",		
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)"],
+		"attributes": ["type(delToBuyer, delivered)", "from(delToBuyer, greatArgMeat)", "item(delToBuyer, meatPacked)", "deliveryAddress(delToBuyer, saintLaurent)", "quality(meatPacked, aaa)"],
+		"events": ["started(cArgToCan),0", "delToBuyer,7"],
+		"expectedStates": ["fulfillment(oDel)","violation(oPay)","inEffect(oLpay)","inEffect(pSusDelivery)"]
+	},
+	{
+		"name": "violates delivery",
+		"description": "what if Seller delivers meat under appropriate condition 5 days after delivery due date?",		
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)"],
+		"attributes": ["type(delToBuyer, delivered)", "from(delToBuyer, greatArgMeat)", "item(delToBuyer, meatPacked)", "deliveryAddress(delToBuyer, saintLaurent)", "quality(meatPacked, a)"],
+		"events": ["started(cArgToCan),0", "delToBuyer,15"],
+		"expectedStates": ["violation(oDel)"]
+	},
+	{
+		"name": "violates delivery, activate contract termination power",
+		"description": "what if Seller does not deliver meat 10 days after delivery due date?",		
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)"],
+		"attributes": [],
+		"events": ["started(cArgToCan),0"],
+		"expectedStates": ["violation(oDel)", "inEffect(pTermContract)"]
+	},
+	{
+		"name": "violates delivery, exert contract termination power",
+		"description": "what if Seller does not deliver meat 10 days after delivery due date, and Buyer terminates the contract?",		
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)"],
+		"attributes": [],
+		"events": ["started(cArgToCan),0", "terminated(cArgToCan),21"],
+		"expectedStates": ["violation(oDel)", "unsuccessfulTermination(cArgToCan)"]
+	},
+	{
+		"name": "violates payment, exert delivery suspension",
+		"description": "what if Seller does not deliver meat 10 days after delivery due date, and Buyer terminates the contract?",		
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)"],
+		"attributes": [],
+		"events": ["started(cArgToCan),0", "suspended(oDel),8"],
+		"expectedStates": ["violation(oPay)", "inEffect(oLpay)", "suspension(oDel)"]
+	},
+	{
+		"name": "violates payment, resume delivery, ",
+		"description": "what if Seller does not deliver meat 10 days after delivery due date, and Buyer terminates the contract?",		
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)"],
+		"attributes": ["type(paidLaToSeller,paidLate)","from(paidLaToSeller,eatMart)","to(paidLaToSeller,greatArgMeat)","amount(paidLaToSeller, 1100)"],
+		"events": ["started(cArgToCan),0", "suspended(oDel),8", "paidLaToSeller,15", "resumed(oDel),18"],
+		"expectedStates": ["violation(oPay)", "fulfillment(oLpay)", "inEffect(oDel)"]
+	},
+	{
+		"name": "terminate contract successfully",
+		"description": "what if Seller deliver meat with proper quality, and Buyer pays before due date?",		
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)"],
+		"attributes": ["type(delToBuyer, delivered)", "from(delToBuyer, greatArgMeat)", "item(delToBuyer, meatPacked)", "deliveryAddress(delToBuyer, saintLaurent)", "quality(meatPacked, aaa)",
+						"type(paidToSeller,paid)","from(paidToSeller,eatMart)","to(paidToSeller,greatArgMeat)","amount(paidToSeller, 1000)"],
+		"events": ["started(cArgToCan),0", "paidToSeller,5", "delToBuyer,7"],
+		"expectedStates": ["fulfillment(oPay)", "fulfillment(oDel)", "successfulTermination(cArgToCan)"]
+	},
+	{
+		"name": "violate contract disclosure",
+		"description": "what if Seller disclose contract information?",		
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)"],
+		"attributes": ["type(disclosedSeller, sellerDisclosed)", "from(disclosedSeller, greatArgMeat)"],
+		"events": ["started(cArgToCan),0", "disclosedSeller,4"],
+		"expectedStates": ["violation(soSellerDisclosure)"]
+	}
+]
