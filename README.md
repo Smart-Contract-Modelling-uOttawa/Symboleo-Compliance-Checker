@@ -3,7 +3,8 @@ Symboleo is a formal specification language for legal contracts. This event-base
 
 # Symboleo Compliance Checker
 This tool is a compliance checker for formal contract specifications written in Symboleo is created inspired by [jREC](https://www.inf.unibz.it/~montali/tools.html#jrec). It evaluates whether a sequence of events(i.e., a trace) is compliant with the contract specification. To this aim, the tool supports Symboleo's primitive predicates(e.g., within and occur), axiomatized semantics, description of contracts, and compliance scenarios.
-Reusable axioms are defined with Prolog language independent of the type of contract and are replicated for all contracts. These domain-independent axioms formalize state machines of norms. However, any contract is a list of parameterized obligations and powers that shall be described individually per contract. Symboleo proposes a template for contracts, obligations, powers, and events. For example, the signature of an obligation is "<trigger> -> <name>:O(debtor, creditor, antecedent, consequent)", and is modeled as below in the tool:
+Reusable axioms are defined with Prolog language independent of the type of contract and are replicated for all contracts. These domain-independent axioms formalize state machines of norms. However, any contract is a list of parameterized obligations and powers that shall be described individually per contract. Symboleo proposes a template for contracts, obligations, powers, and events. For example, the signature of an obligation is " \<trigger\> -> \<name\>:O(debtor, creditor, antecedent, consequent)", and is modeled as below in the tool:
+
 	o(X) :- o1(X).
 	o1(oDel).
 	associate(oDel, cArgToCan).
@@ -23,7 +24,9 @@ Events control the execution of a contract. Sequences of events alongside expect
 
 # Current State
 The tool is able to:
+
 1- Specify and instantiates multiple contracts, conditional/unconditional powers and obligations in a hierarchical structure
+
 2- Provide a list of compliance scenarios for positive scenarios
 
 # Future Work
