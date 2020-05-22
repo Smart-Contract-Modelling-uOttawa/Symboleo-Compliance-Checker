@@ -1,9 +1,8 @@
 # What is Symboleo?
-Symboleo is a formal specification language for legal contracts. This event-based language inherits event-calculus predicates to specify contractual norms(e.g., obligations, powers, assignments, subcontract) in terms of situations. Contractual norms evolve over time thanks to supporting time points and time intervals in this language. In other words, internal(e.g., deadlines) and external events(e.g., payment) may change states of these norms during the time. Three state machines represent the evolution semantics of norms while corresponding formal specifications have been axiomatized in Axiom.txt file and tutorial document. These state machines are available in a paper titled "Symboleo: Towards a Specification Language for Legal Contracts".
+Symboleo is a formal specification language for legal contracts. It describes contracts in terms of contractual norms such as obligations, powers, assignments, subcontracts, etc.  Symboleo is an event-based language that inherits event-calculus predicates to specify normsin terms of situations. Contractual norms evolve over time according to events occurring at time points and time intervals  specified in the language. In other words, internal (e.g., deadlines) and external events (e.g., payments) may change the state of the norms during time. Three state machines represent the evolution semantics of norms while corresponding formal specifications have been axiomatized in the Axiom.txt file and the tutorial document. The state machines are given in our accepted paper titled "Symboleo: Towards a Specification Language for Legal Contracts".
 
 # Symboleo Compliance Checker
-This tool is a compliance checker for formal contract specifications written in Symboleo is created inspired by [jREC](https://www.inf.unibz.it/~montali/tools.html#jrec). It evaluates whether a sequence of events(i.e., a trace) is compliant with the contract specification. To this aim, the tool supports Symboleo's primitive predicates(e.g., within and occur), axiomatized semantics, description of contracts, and compliance scenarios.\
-Reusable axioms are defined with Prolog language independent of the type of contract and are replicated for all contracts. These domain-independent axioms formalize state machines of norms. However, any contract is a list of parameterized obligations and powers that shall be described individually per contract. Symboleo proposes a template for contracts, obligations, powers, and events. For example, the signature of an obligation is " \<trigger\> -> \<name\>:O(debtor, creditor, antecedent, consequent)", and is modeled as below in the tool:
+This tool is a compliance checker for formal contract specifications written in Symboleo. It was inspired by the tool  jREC. It evaluates whether given sequences of events (i.e., traces) are compliant with given contract specifications. To this aim, the tool supports Symboleo's primitive predicates (such as **within** and **occur**), axiomatized semantics, description of contracts, and compliance scenarios. For each contract specification, we have a part consisting of reusable, domain-independent axioms and a contract-specific part, both written in Prolog. The reusable axioms are replicated in each contract. They formalize the state machines of norms. The contract-specific part describes  the list of parameterized obligations and powers that is specific to each contract. Symboleo proposes templates for contracts, obligations, powers, and events. For example, the signature of an obligation is " \<trigger\> -> \<name\>:O(debtor, creditor, antecedent, consequent)", and is modeled in the tool as shown below:
 
 	o(X) :- o1(X).
 	o1(oDel).
@@ -18,14 +17,11 @@ Reusable axioms are defined with Prolog language independent of the type of cont
 	deadline(cons(oDel), 10).
 	happens(deliveryDuePassed, 10).
   
-  where oDel and cArgToCan are an instance of delivery obligation and Sales of Good contract respectively.\
-Events control the execution of a contract. Sequences of events alongside expected properties are defined in a batch file and sequentially are fed into the specification. Attributes of events distinguish events that can happen in any order thanks to the reactive nature of the tool. Traces put contracts in new situations that shall be compliant with expected properties.
+where oDel and cArgToCan are an instance of delivery obligation and Sales of Good contract respectively.\
+As mentioned, the execution of contracts is controlled by events. Sequences of events alongside expected properties are defined in batch files that are fed sequentially into the Prolog programs described above. Attributes of events distinguish events that can happen in any order because of the reactive nature of the tool. Traces put contracts in new situations that should be compliant with expected properties.
 
 # Current State
 The tool is able to:\
 1- Specify and instantiates multiple contracts, conditional/unconditional powers and obligations in a hierarchical structure\
 2- Provide a list of compliance scenarios for positive scenarios
-
-# Future Work
-In the close future, we will improve the tool to investigate negative scenarios, runtime operations such as subcontracting, graphical user interface. Negative scenarios determine situations that a trace never brings about.
 
