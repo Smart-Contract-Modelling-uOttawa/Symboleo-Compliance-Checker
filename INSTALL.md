@@ -1,3 +1,7 @@
+# Requirements
+1- JAVA SE Runtime Environment 18.3 or higher\
+2- Eclipse IDE
+
 # Execute in Eclipse IDE
 1- Make a folder\
 2- Clone source code in the folder\
