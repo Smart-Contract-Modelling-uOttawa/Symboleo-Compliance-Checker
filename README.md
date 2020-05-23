@@ -23,5 +23,5 @@ As mentioned, the execution of contracts is controlled by events. Sequences of e
 # Current State
 The tool is able to:\
 1- Specify and instantiates multiple contracts, conditional/unconditional powers and obligations in a hierarchical structure\
-2- Provide a list of compliance scenarios for positive scenarios. These scenarios check situations that must be true after running a trace of events. Similarly
+2- Provide a list of compliance scenarios for positive scenarios. These scenarios check situations that must be true after running a trace of events.
 
