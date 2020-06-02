@@ -1,0 +1,194 @@
+#---------------------------------------------------------------------------
+# Semantics of domain independent predicates 
+#---------------------------------------------------------------------------
+#  -- c(X)									: X is an instance of a contract
+#  -- o(X)									: X is an instance of an obligation
+#  -- p(X)									: X is an instance of a power
+#  -- role(X)								: X is an instance of a role
+#  -- asset(X)								: X is an instance of an asset
+#  -- event(X)								: X is an instance of an event
+#  -- subcontracted(E, Obls, Cnts, Ps)		: event E subcontracts obligations Obls through subcontracts Cnts to parties Ps respectively
+#  -- assignedR(E, Pows, Pold, Pnew)		: event E assigns powers Pows from party Pold to party Pnew
+#  -- consented(E1, E2)						: occurrence of event E1 consents occurrence of event E2
+#  -- deadline(S, T)						: deadline of situation S is time point T
+#  -- bind(R, P)							: bind role R to party P
+#  -- associate(X, C)						: associates an obligation/power instance X with an instance of contract C
+#  -- debtor(X, P)							: debtor of an obligation/power instance X is party P
+#  -- creditor(X, P)						: creditor of an obligation/power instance X is party P
+#  -- trigger(X)							: a situation that indicates trigger of an obligation/power instance X
+#  -- ant(X)								: a situation that indicates antecedent of an obligation/power instance X
+#  -- cons(X)								: a situation that indicates consequent of an obligation/power instance X
+#  -- initially(S)							: a situation S is initiated at start time(-1)
+#  -- within(E, S)							: a situation S holds when event E happens
+#  -- initiates(E, S)						: an event e brings about a situation S
+#  -- terminates(E, S)						: an event E terminates a situation S
+#  -- happens(E, T)							: an event E happens at time point t
+#  -- holds_at(S, T)						: a situation S holds at time point t
+
+#---------------------------------------------------------------------------
+# Sales of Goods Contract
+#---------------------------------------------------------------------------
+
+## Domain
+	c(X) 				:- initially(meatSale(X, _, _, _, _, _)).
+	
+	role(buyer).
+	role(seller).
+	
+	asset(X) 			:- perishableGood(X).
+	perishableGood(X) 	:- meat(X).
+	
+	event(X) 			:- paid(X).
+	event(X) 			:- paidLate(X).
+	event(X) 			:- disclosed(X).
+	event(X) 			:- delivered(X).	
+	event(X) 			:- assignedR(X, _, _, _).
+	event(X) 			:- subcontracted(X, _, _, _).
+	event(X) 			:- consented(X, _).	
+		
+## Declarations
+	c(X) 						:- initially(meatSale(X, _, _, _, _, _)).
+	initially(bind(buyer, X)) 	:- initially(meatSale(_, X, _, _, _, _)).
+	initially(bind(seller, X)) 	:- initially(meatSale(_, _, X, _, _, _)).
+	deliveryDueDate(X) 			:- initially(meatSale(_, _, _, _, X, _)).
+	paymentDueDate(X) 			:- initially(meatSale(_, _, _, _, _, X)).
+	meat(X) 					:- initially(meatSale(_, _, _, X, _, _)).
+	
+	# Events
+	delivered(E) 						:- o1(O), within(E, performer(O, X)), happens(E, T), holds_at(type(E, delivered), T), holds_at(from(E, X), T), holds_at(item(E, meatPacked), T), holds_at(deliveryAddress(E, saintLaurent), T), holds_at(quality(meatPacked, aaa), T).
+	paid(E) 							:- o2(O), within(E, performer(O, X)), within(E, rightHolder(O, Y)), happens(E, T), holds_at(type(E, paid), T), holds_at(from(E, X), T), holds_at(to(E, Y), T), holds_at(amount(E, 1000), T).
+	assignedR(E, L, Pold, Pnew) 		:- happens(E, T), holds_at(type(E, assignedR), T), holds_at(from(E, Pold), T), holds_at(to(E, Pnew), T), holds_at(legalPos(E, L), T).
+	consented(E, X) 					:- happens(E, T), holds_at(type(E, consented), T), holds_at(to(E, X), T).
+	subcontracted(E, Obls, Cnts, Ps) 	:- happens(E, T), holds_at(type(E, subcontractedC), T), holds_at(from(E, Porigin), T), holds_at(to(E, Ps), T), holds_at(obligation(E, Obls), T), holds_at(through(E, Cnts), T).
+		
+## Contract
+	initially(form(X)) 					:- initially(meatSale(X, _, _, _, _, _)).
+	
+	#-----------------------------------------------------------------------
+	# Obligations
+	#-----------------------------------------------------------------------
+	## define unconditional delivery obligation(i.e., oDel) as an instance of obligation 'o1'.
+	o(X) :- o1(X).
+	o1(oDel).
+	associate(oDel, cArgToCan).
+	
+	initially(debtor(X, P)) 		:- o1(X), initially(bind(seller, P)).
+	initially(creditor(X, P)) 		:- o1(X), initially(bind(buyer, P)).
+	
+	initiates(E, trigger(oDel))		:- happens(E, _), initiates(E, inEffect(cArgToCan)). 
+	ant(oDel) :- true.	
+	initiates(E, cons(oDel)) 		:- happens(E, T), delivered(E), deliveryDueDate(T1), T<T1.
+	deadline(cons(oDel), Td) 		:- deliveryDueDate(Td).
+	# assume delivery due date is 10
+	happens(deliveryDuePassed, 10).
+	
+	## define unconditional payment obligation(i.e., oPay) as an instance of obligation 'o2'.
+	o(X) :- o2(X).
+	o2(oPay).
+	associate(oPay, cArgToCan).
+	
+	initially(debtor(X, P)) 	:- o2(X), initially(bind(buyer, P)).
+	initially(creditor(X, P)) 	:- o2(X), initially(bind(seller, P)).
+	
+	initiates(E, trigger(oPay)) :- happens(E, _), initiates(E, inEffect(cArgToCan)). 
+	ant(oPay) 					:- true.	
+	initiates(E, cons(oPay)) 	:- happens(E, T), paid(E), paymentDueDate(Tp), T<Tp.
+	deadline(cons(oPay), Tp) 	:- paymentDueDate(Tp).
+	# assume payment due date is 7
+	happens(paymentDueDate, 7).
+		
+	#---------------------------------------------------------------------------
+	# Powers
+	#---------------------------------------------------------------------------
+	## define unconditional contract termination power(i.e., pTermContract) as an instance of 'p3'.
+	p(X) :- p3(X).
+	p3(pTermContract).
+	associate(pTermContract, cArgToCan). 
+	
+	initially(debtor(X, P)) 			:- p3(X), initially(bind(seller, P)).
+	initially(creditor(X, P)) 			:- p3(X), initially(bind(buyer, P)).
+	
+	ant(pTermContract) 					:- true.
+	unsuccessfulTermination(cArgToCan) 	:- cons(pTermContract).
+	happens(passedPayDue, 7).
+	initiates(passedPayDue, trigger(pTermContract)) :- \+(happens(E, T1), paid(E)), happens(passedPayDue, T2).
+	happens(exerted(pTermContract), T) 	:- happens(terminated(cArgToCan), T).
+
+#---------------------------------------------------------------------------
+# Freight Contract
+#---------------------------------------------------------------------------
+## Domain
+	role(shipper).
+	role(carrier).
+	
+	asset(X) 			:- perishableGood(X).
+	perishableGood(X) 	:- meat(X).
+	
+	event(X)			:- paid(X).
+	event(X) 			:- delivered(X).
+	event(X) 			:- invoiced(X).
+	event(X) 			:- orderReceived(X).
+	event(X) 			:- substitutedC(X, _, _, _, _).
+	event(X) 			:- consented(X, _).
+	
+## Declarations
+	c(X) 				:- initially(freight(X, _, _, _, _, _)).
+	
+	initially(bind(shipper, X)) :- initially(freight(_, X, _, _, _, _)).
+	initially(bind(carrier, X)) :- initially(freight(_, _, X, _, _, _)).
+	meat(X) 					:- initially(freight(_, _, _, X, _, _)).
+	frDeliveryDueDate(X) 		:- initially(freight(_, _, _, _, X, _)).
+	frPayDueDate(X)				:- initially(freight(_, _, _, _, _, X)).
+	
+	deliveredFr(E) 				:- o4(O), within(E, performer(O, X)), happens(E, T), holds_at(type(E, delivered), T), holds_at(from(E, X), T), holds_at(item(E, meatPacked), T), holds_at(deliveryAddress(E, saintLaurent), T), holds_at(quality(meatPacked, aaa), T).
+	paidFr(E) 					:- o5(O), within(E, performer(O, X)), within(E, rightHolder(O, Y)), happens(E, T), holds_at(type(E, paid), T), holds_at(from(E, X), T), holds_at(to(E, Y), T), holds_at(amount(E, 1000), T).
+	paidLateFr(E) 				:- o6(O), within(E, performer(O, X)), within(E, rightHolder(O, Y)), happens(E, T), holds_at(type(E, paidLate), T), holds_at(from(E, X), T), holds_at(to(E, Y), T), holds_at(amount(E, 1100), T).
+	
+	substitutedC(E, Y, R, Pold, Pnew) 	:- happens(E, T), holds_at(type(E, substitutedC), T), holds_at(from(E, Pold), T), holds_at(to(E, Pnew), T), holds_at(contract(E, Y), T), within(E, bind(R, Pold)).
+	consented(E, X) 					:- happens(E, T), holds_at(type(E, consented), T), holds_at(to(E, X), T).
+	
+## Contract
+	initially(form(X)) :- initially(freight(X, _, _, _, _, _)).
+	
+	#---------------------------------------------------------------------------
+	# Obligations
+	#---------------------------------------------------------------------------
+	## define unconditional delivery obligation(i.e., oDelFr) as an instance of obligation 'o4'.
+	o(X) :- o4(X).
+	o4(oDelFr).
+	associate(oDelFr, cFreight). 
+	
+	initially(debtor(X, P)) 		:- o4(X), initially(bind(carrier, P)).
+	initially(creditor(X, P)) 		:- o4(X), initially(bind(shipper, P)).
+	
+	ant(oDelFr) 					:- true.
+	initiates(E, trigger(oDelFr)) 	:- happens(E, _), initiates(E, inEffect(cFreight)).
+	initiates(E, cons(oDelFr))		:- happens(E, T), deliveredFr(E), frDeliveryDueDate(Td), T<Td.
+	deadline(cons(oDelFr), Td) 		:- frDeliveryDueDate(Td).
+	happens(passedDelDue, 9).
+	
+	# define conditional paid obligation(i.e., oPayFr) as an instance of obligation 'o5'.
+	o(X) :- o5(X).
+	o5(oPayFr).
+	associate(oPayFr, cFreight). 
+	
+	initially(debtor(X, P)) 		:- o5(X), initially(bind(shipper, P)).
+	initially(creditor(X, P)) 		:- o5(X), initially(bind(carrier, P)).
+	
+	initiates(E, trigger(oPayFr)) 	:- happens(E, T), delivered(E).
+	ant(oPayFr) 					:- true.
+	initiates(E1, cons(oPayFr)) 	:- happens(E1, T1), paidFr(E1), happens(E2, T2), deliveredFr(E2), T1<T2+3.
+	deadline(cons(oPayFr), Tp) 		:- frPayDueDate(Tp).
+	happens(passedPayFrDue, 6).
+	
+	# define conditional paid obligation(i.e., oLpay) as an instance of obligation 'o6'.
+	o(X) :- o6(X).
+	o6(oLpayFr).
+	associate(oLpayFr, cFreight).
+	
+	initially(debtor(X, P)) 		:- o6(X), initially(bind(shipper, P)).
+	initially(creditor(X, P)) 		:- o6(X), initially(bind(carrier, P)).
+	 
+	initiates(E, trigger(oLpayFr)) 	:- happens(E, _), initiates(E, violation(oPayFr)).
+	ant(oLpayFr) 					:- true.
+	initiates(E, cons(oLpayFr)) 	:- happens(E, T), paidLateFr(E).

@@ -1,0 +1,67 @@
+[
+	{
+		"name": "violates oDel",
+		"description": "what if Buyer pays off the order and Carrier(as a subcontractor) delivers meat under inappropriate condition which has rotten the meat?",		
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)", "freight(cFreight, greatArgMeat, fedEx, meatPacked, 9, 6)"],
+		"attributes": ["type(subcontFedex, subcontractedC)", "from(subcontFedex, greatArgMeat)", "to(subcontFedex, [fedEx])", "obligation(subcontFedex, [oDel])", "through(subcontFedex, [cFreight])",
+					"type(delToBuyer, delivered)", "from(delToBuyer, fedEx)","item(delToBuyer, meatPacked)", "deliveryAddress(delToBuyer, saintLaurent)", "quality(meatPacked, a)",
+					"type(payToSeller, paid)", "from(payToSeller, eatMart)", "to(payToSeller, greatArgMeat)", "amount(payToSeller,1000)"],
+		"events": ["started(cArgToCan),0", "started(cFreight),1", "delToBuyer,7", "subcontFedex,1", "payToSeller,5"],
+		"expectedStates": ["violation(oDel)", "violation(oDelFr)", "fulfillment(oPay)"]
+	},
+	{
+		"name": "fulfill oDel and violate oDelFr",
+		"description": "what if the freight subcontract is started 1 days later, the carrier cannot deliver before 10th day instead the seller delivers meat to the buyer before 10th day and get paid?",
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)", "freight(cFreight, greatArgMeat, fedEx, meatPacked, 9, 6)"],
+		"attributes": ["type(subcontFedex, subcontractedC)", "from(subcontFedex, greatArgMeat)", "to(subcontFedex, [fedEx])", "obligation(subcontFedex, [oDel])", "through(subcontFedex, [cFreight])",
+					"type(delToBuyer, delivered)", "from(delToBuyer, greatArgMeat)", "item(delToBuyer, meatPacked)", "deliveryAddress(delToBuyer, saintLaurent)", "quality(meatPacked, aaa)",
+					"type(payToSeller, paid)", "from(payToSeller, eatMart)", "to(payToSeller, greatArgMeat)", "amount(payToSeller,1000)"],
+		"events": ["started(cArgToCan),0", "started(cFreight),1", "delToBuyer,7", "payToSeller,5", "subcontFedex,1"],
+		"expectedStates": ["fulfillment(oDel)", "violation(oDelFr)", "fulfillment(oPay)"]
+	},
+	{
+		"name": "violate oDel/oDelFr",
+		"description": "what if Buyer refuses payment and neither Carrier(as subcontractor), nor shipper deliver meat till 10 days after due date?",
+		"initials": ["type(subcontFedex, subcontractedC)", "from(subcontFedex, greatArgMeat)", "to(subcontFedex, [fedEx])", "obligation(subcontFedex, [oDel])", "through(subcontFedex, [cFreight])",
+					"meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)", "freight(cFreight, greatArgMeat, fedEx, meatPacked, 9, 6)"],
+		"attributes": [],
+		"events": ["started(cArgToCan),0", "started(cFreight),1", "subcontFedex,1"],
+		"expectedStates": ["violation(oDel)", "violation(oPay)", "violation(oDelFr)", "active(pTermContract)"]
+	},
+	{
+		"name": "activate oPayFr",
+		"description": "what if Carrier delivers meat while shipper awaits more than 10 days for buyer payment?",
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)", "freight(cFreight, greatArgMeat, fedEx, meatPacked, 9, 6)"],
+		"attributes": ["type(subcontFedex, subcontractedC)", "from(subcontFedex, greatArgMeat)", "to(subcontFedex, [fedEx])", "obligation(subcontFedex, [oDel])", "through(subcontFedex, [cFreight])",
+					"type(delToBuyer, delivered)", "from(delToBuyer, fedEx)", "item(delToBuyer, meatPacked)", "deliveryAddress(delToBuyer, saintLaurent)", "quality(meatPacked, aaa)"],
+		"events": ["started(cArgToCan),0", "started(cFreight),1", "delToBuyer,5", "subcontFedex,1"],
+		"expectedStates": ["fulfillment(oDel)", "violation(oPayFr)","fulfillment(oDelFr)","violation(oPay)","active(pTermContract)"]
+	},	
+	{
+		"name": "terminates Sales of Goods contract",
+		"description": "what if Buyer refuses payment and Seller terminates contract?",
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)", "freight(cFreight, greatArgMeat, fedEx, meatPacked, 9, 6)"],
+		"attributes": ["type(subcontFedex, subcontractedC)", "from(subcontFedex, greatArgMeat)", "to(subcontFedex, [fedEx])", "obligation(subcontFedex, [oDel])", "through(subcontFedex, [cFreight])"],
+		"events": ["started(cArgToCan),0", "started(cFreight),1", "terminated(cArgToCan),8", "subcontFedex,1"],
+		"expectedStates": ["violation(oPay)", "unsuccessfulTermination(cArgToCan)"]
+	},
+	{
+		"name": "assign payment right to Walmart",
+		"description": "what if EatMart pays GreatArgMeat instead of Walmart while has consented to assign payment right to Walmart?",
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)", "freight(cFreight, greatArgMeat, fedEx, meatPacked, 9, 6)"],
+		"attributes": ["type(subcontFedex, subcontractedC)", "from(subcontFedex, greatArgMeat)", "to(subcontFedex, [fedEx])", "obligation(subcontFedex, [oDel])", "through(subcontFedex, [cFreight])",
+					   "type(asgToWalmart, assignedR)", "from(asgToWalmart, greatArgMeat)", "to(asgToWalmart, walmart)", "legalPos(asgToWalmart, [oPay])", 
+					   "type(consentedAsg, consented)", "to(consentedAsg, asgToWalmart)",
+					   "type(payToSeller, paid)", "from(payToSeller, eatMart)", "to(payToSeller, greatArgMeat)", "amount(payToSeller,1000)"],
+		"events": ["started(cArgToCan),0", "started(cFreight),1", "consentedAsg,3", "asgToWalmart,4", "payToSeller,5", "subcontFedex,1"],
+		"expectedStates": ["rightHolder(oPay,walmart)", "violation(oPay)", "active(pTermContract)"]
+	},
+	{
+		"name": "subcontract delivery to FedEx",
+		"description": "what if greatArgMeat subcontract meat delivery to FedEx?",		
+		"initials": ["meatSale(cArgToCan, eatMart, greatArgMeat, meatPacked, 10, 7)", "freight(cFreight, greatArgMeat, fedEx, meatPacked, 9, 6)"],
+		"attributes": ["type(subcontFedex, subcontractedC)", "from(subcontFedex, greatArgMeat)", "to(subcontFedex, [fedEx])", "obligation(subcontFedex, [oDel])", "through(subcontFedex, [cFreight])"],
+		"events": ["started(cArgToCan),0", "started(cFreight),1", "subcontFedex,4"],
+		"expectedStates": ["performer(oDel,fedEx)","performer(oDel,greatArgMeat)"]
+	}
+]

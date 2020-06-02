@@ -1,0 +1,155 @@
+#-------------------------------------------------------------------------------------------
+# Contract Axioms
+#-------------------------------------------------------------------------------------------
+# from formed to inEffect state of contract
+initiates(started(X), inEffect(X)) :- c(X), happens(started(X), T), holds_at(form(X), T).
+terminates(started(X), form(X)) :- c(X), happens(started(X), T), holds_at(form(X), T).
+
+# activate a contract
+initiates(E, active(X)) :- c(X), (initiates(E, inEffect(X));initiates(E, suspension(X));initiates(E, unassign(X))).
+terminates(E, active(X)) :- c(X), (initiates(E, successfulTermination(X)); initiates(E, unsuccessfulTermination(X))).
+terminates(E, inEffect(X)) :- c(X), terminates(E, active(X)).
+terminates(E, suspension(X)) :- c(X), terminates(E, active(X)).
+terminates(E, unassign(X)) :- c(X), terminates(E, active(X)).
+
+# terminate a contract unsuccessfully
+initiates(exerted(X), unsuccessfulTermination(Y)) :- p(X), c(Y), associate(X, Y), clause(unsuccessfulTermination(Y), cons(X)), within(exerted(X), inEffect(X)), within(exerted(X), active(Y)).	
+terminates(exerted(X), inEffect(Y)) :- p(X), c(Y), associate(X, Y), clause(unsuccessfulTermination(Y), cons(X)), within(exerted(X), inEffect(X)), within(exerted(X), active(Y)).
+
+# terminate a contract successfully
+initiates(E, successfulTermination(X)) :- c(X), o(Z), associate(Z, X), happens(E, T), declip(fulfillment(Z), T), within(E, inEffect(X)), not((o(Y), associate(Y, X), Y\==Z, not(so(Y)), within(E, active(Y)))).
+terminates(E, inEffect(X)) :- c(X), o(Z), associate(Z, X), happens(E, T), declip(fulfillment(Z), T), within(E, inEffect(X)), not((o(Y), associate(Y, X), Y\==Z, not(so(Y)), within(E, active(Y)))).
+
+#-------------------------------------------------------------------------------------------
+# Obligation Axioms
+#-------------------------------------------------------------------------------------------
+# instantiate an obligation by power	
+instance(W, Z) :- p(X), c(Y), clause(creates(W, Z), cons(X)), within(exerted(X), inEffect(X)), within(exerted(X), inEffect(Y)), associate(X, Y).
+
+# create a conditional obligation
+initiates(E, create(X)) :- o(X), c(Y), associate(X, Y), not(clause(ant(X), true)), ((initiates(E, trigger(X)), within(E, inEffect(Y))) ; clause(trigger(X), true)).
+
+# from created to inEffect state of an conditional obligation
+initiates(E, inEffect(X)) :- o(X), c(Y), associate(X, Y), initiates(E, ant(X)), within(E, create(X)), within(E, inEffect(Y)).
+terminates(E, create(X)) :- o(X), c(Y), associate(X, Y), initiates(E, ant(X)), within(E, create(X)), within(E, inEffect(Y)).
+
+# from created to inEffect state of an unconditional obligation directly
+initiates(E, inEffect(X)) :- o(X), c(Y), associate(X, Y), clause(ant(X), true), initiates(E, trigger(X)), within(E, inEffect(Y)).
+
+# activate an obligation
+initiates(E, active(X)) :- o(X), (initiates(E, inEffect(X));initiates(E, suspension(X))).
+terminates(E, active(X)) :- o(X), (initiates(E, fulfillment(X));initiates(E, violation(X));initiates(E, unsuccessfulTermination(X));initiates(E, discharge(X))).
+terminates(E, inEffect(X)) :- o(X), terminates(E, active(X)).
+terminates(E, suspension(X)) :- o(X), terminates(E, active(X)).
+
+# fulfill an obligation(conditional and unconditional)
+initiates(E, fulfillment(X)) :- o(X), c(Y), associate(X, Y), happens(E, T), initiates(E, cons(X)), within(E, inEffect(X)), within(E, inEffect(Y)).
+terminates(E, inEffect(X)) :- o(X), c(Y), associate(X, Y), happens(E, T), initiates(E, cons(X)), within(E, inEffect(X)), within(E, inEffect(Y)).
+
+# violate an obligation(conditional and unconditional) #Bug(violate surviving obligation so1)
+initiates(E, violation(X)) :- o(X), c(Y), associate(X, Y), deadline(cons(X), T), happens(E, T), holds_at(inEffect(X), T), holds_at(inEffect(Y), T).
+terminates(E, inEffect(X)) :- o(X), c(Y), associate(X, Y), deadline(cons(X), T), happens(E, T), holds_at(inEffect(X), T), holds_at(inEffect(Y), T).
+
+# suspend an obligation(conditional and unconditional)
+initiates(suspended(Z), suspension(Z)) :- p(X), c(Y), o(Z), associate(Z, Y), associate(X, Y), clause(suspension(Z), cons(X)), within(suspended(Z), inEffect(X)), within(suspended(Z), inEffect(Y)), within(suspended(Z), inEffect(Z)).
+terminates(suspended(Z), inEffect(Z)) :- p(X), c(Y), o(Z), associate(Z, Y), associate(X, Y), clause(suspension(Z), cons(X)), within(suspended(Z), inEffect(X)), within(suspended(Z), inEffect(Y)), within(suspended(Z), inEffect(Z)).
+
+# resume an obligation(conditional and unconditional)
+initiates(resumed(Z), inEffect(Z)) :- p(X), c(Y), o(Z), associate(Z, Y), associate(X, Y), clause(resumption(Z), cons(X)), within(resumed(Z), inEffect(X)), within(resumed(Z), inEffect(Y)), within(resumed(Z), suspension(Z)).
+terminates(resumed(Z), suspension(Z)) :- p(X), c(Y), o(Z), associate(Z, Y), associate(X, Y), clause(resumption(Z), cons(X)), within(resumed(Z), inEffect(X)), within(resumed(Z), inEffect(Y)), within(resumed(Z), suspension(Z)).
+
+# discharge an obligation(conditional and unconditional)
+initiates(discharged(Z), discharge(Z)) :- p(X), c(Y), o(Z), associate(Z, Y), associate(X, Y), clause(discharge(Z), cons(X)), within(discharged(Z), inEffect(X)), within(discharged(Z), inEffect(Y)), within(discharged(Z), inEffect(Z)).
+terminates(discharged(Z), inEffect(Z)) :- p(X), c(Y), o(Z), associate(Z, Y), associate(X, Y), clause(discharge(Z), cons(X)), within(discharged(Z), inEffect(X)), within(discharged(Z), inEffect(Y)), within(discharged(Z), inEffect(Z)).
+
+# terminate an obligation(conditional and unconditional) after contract termination
+initiates(E, unsuccessfulTermination(X)) :- o(X), c(Y), associate(X, Y), not(so(X)), within(E, active(X)), within(E, unsuccessfulTermination(Y)).
+terminates(E, active(X)) :- o(X), c(Y), associate(X, Y), not(so(X)), within(E, active(X)), within(E, unsuccessfulTermination(Y)).
+
+#-------------------------------------------------------------------------------------------
+# Surviving Obligation Axioms
+#-------------------------------------------------------------------------------------------
+o(X) :- so(X).
+
+#-------------------------------------------------------------------------------------------
+# Power Axioms
+#-------------------------------------------------------------------------------------------
+# create a conditional power
+initiates(E, create(X)) :- p(X), c(Y), associate(X, Y), not(clause(ant(X), true)), ((initiates(E, trigger(X)), within(E, inEffect(Y))) ; clause(trigger(X), true)).
+
+# create an unconditional power
+initiates(E, inEffect(X)) :- p(X), c(Y), associate(X, Y), clause(ant(X), true), initiates(E, trigger(X)), within(E, inEffect(Y)).
+
+# from created to inEffect state of an conditional power	
+initiates(E, inEffect(X)) :- p(X), c(Y), associate(X, Y), initiates(E, ant(X)), within(E, create(X)), within(E, inEffect(Y)).	
+terminates(E, create(X)) :- p(X), c(Y), associate(X, Y), initiates(E, ant(X)), within(E, create(X)), within(E, inEffect(Y)).
+
+# terminate a power(conditional and unconditional)
+initiates(exerted(X), successfulTermination(X)) :- p(X), c(Y), associate(X, Y), within(exerted(X), inEffect(X)), within(exerted(X), inEffect(Y)).
+terminates(exerted(X), inEffect(X)) :- p(X), c(Y), associate(X, Y), within(exerted(X), inEffect(X)), within(exerted(X), inEffect(Y)).
+
+# activate a power
+initiates(E, active(X)) :- p(X), (initiates(E, inEffect(X));initiates(E, suspension(X))).
+terminates(E, active(X)) :- p(X), (initiates(E, successfulTermination(X));initiates(E, unsuccessfulTermination(X))).
+terminates(E, inEffect(X)) :- p(X), terminates(E, active(X)).
+terminates(E, suspension(X)) :- p(X), terminates(E, active(X)).
+
+# terminate a power(conditional and unconditional) after contract termination
+initiates(E, unsuccessfulTermination(X)) :- p(X), c(Y), associate(X, Y), within(E, active(X)), within(E, unsuccessfulTermination(Y)).
+terminates(E, active(X)) :- p(X), c(Y), associate(X, Y), within(E, active(X)), within(E, unsuccessfulTermination(Y)).
+
+#-------------------------------------------------------------------------------------------
+# Liability and Performance
+#-------------------------------------------------------------------------------------------
+initiates(E, liable(X, P)) :- o(X), happens(E, T), initiates(E, inEffect(X)), holds_at(debtor(X, P), T).
+initiates(E, performer(X, P)) :- o(X), happens(E, T), initiates(E, inEffect(X)), holds_at(debtor(X, P), T).
+
+initiates(E, rightHolder(X, P)) :- o(X), happens(E, T), initiates(E, inEffect(X)), holds_at(creditor(X, P), T).
+
+initiates(E, liable(X, P)) :- p(X), happens(E, T), initiates(E, inEffect(X)), holds_at(debtor(X, P), T).
+
+initiates(E, performer(X, P)) :- p(X), happens(E, T), initiates(E, inEffect(X)), holds_at(creditor(X, P), T).
+initiates(E, rightHolder(X, P)) :- p(X), happens(E, T), initiates(E, inEffect(X)), holds_at(creditor(X, P), T).
+
+#-------------------------------------------------------------------------------------------
+# Execution-time Operations
+#-------------------------------------------------------------------------------------------
+initiates(E, rightHolder(X, P)) :- (o(X);p(X)), happens(E, T), happen(sharedR(X, P), T), holds_at(active(X), T).
+initiates(E, liable(X, P)) :- (o(X);p(X)), happens(E, T), happen(sharedL(X, P), T), holds_at(active(X), T).
+initiates(E, performer(X, P)) :- (o(X);p(X)), happens(E, T), happen(sharedP(X, P), T), holds_at(active(X), T).
+
+initiates(E, rightHolder(X, Pnew)) :- (o(X);p(X)), happens(E, T), happen(transferredR(X, Pold, Pnew), T), holds_at(active(X), T), holds_at(rightHolder(X, Pold), T).
+terminates(E, rightHolder(X, Pold)) :- (o(X);p(X)), happens(E, T), happen(transferredR(X, Pold, Pnew), T), holds_at(active(X), T), holds_at(rightHolder(X, Pold), T).
+
+initiates(E, liable(X, Pnew)) :- (o(X);p(X)), happens(E, T), happen(transferredL(X, Pold, Pnew), T), holds_at(active(X), T), holds_at(liable(X, Pold), T).
+terminates(E, liable(X, Pold)) :- (o(X);p(X)), happens(E, T), happen(transferredL(X, Pold, Pnew), T), holds_at(active(X), T), holds_at(liable(X, Pold), T).
+
+initiates(E, performer(X, Pnew)) :- (o(X);p(X)), happens(E, T), happen(transferredP(X, Pold, Pnew), T), holds_at(active(X), T), holds_at(performer(X, Pold), T).
+terminates(E, performer(X, Pold)) :- (o(X);p(X)), happens(E, T), happen(transferredP(X, Pold, Pnew), T), holds_at(active(X), T), holds_at(performer(X, Pold), T).
+
+#-------------------------------------------------------------------------------------------
+# Subcontracting
+#-------------------------------------------------------------------------------------------
+happen(sharedP(X, Z), T) :- happens(E, T), subcontracted(E, Obls, Cnts, Ps), member(X, Obls), member(Y, Cnts), member(Z, Ps), o(X), c(Y).
+
+#-------------------------------------------------------------------------------------------
+# Assignment
+#-------------------------------------------------------------------------------------------
+happen(transferredR(X, Pold, Pnew), T2) :- happens(E1, T1), consented(E1, E2), assignedR(E2, Ls, Pold, Pnew), happens(E2, T2), T1=<T2, member(L, Ls), holds_at(active(L), T2), holds_at(rightHolder(L, Pold), T2).
+
+#-------------------------------------------------------------------------------------------
+# Substitution
+#-------------------------------------------------------------------------------------------
+initiates(substitutedC(Y, R, Pold, Pnew), bind(R, Pnew)) :- c(Y), role(R), happens(consented(substitutedC(Y, R, Pold, Pnew)), T1), happens(substitutedC(Y, R, Pold, Pnew), T2), T1=<T2, holds_at(active(Y), T2), holds_at(bind(R, Pold), T2).
+initiates(E2, bind(R, Pnew)) :- c(Y), role(R), happens(E1, T1), consented(E1, E2), substitutedC(E2, Y, R, Pold, Pnew), happens(E2, T2), T1=<T2, holds_at(active(Y), T2), holds_at(bind(R, Pold), T2).
+terminates(E2, bind(R, Pold)) :- c(Y), role(R), happens(E1, T1), consented(E1, E2), substitutedC(E2, Y, R, Pold, Pnew), happens(E2, T2), T1=<T2, holds_at(active(Y), T2), holds_at(bind(R, Pold), T2).
+
+happen(transferredL(X, Pold, Pnew), T2) :- c(Y), (o(X);p(X)), associate(X, Y), happens(E1, T1), consented(E1, E2), substitutedC(E2, Y, R, Pold, Pnew), happens(E2, T2), T1=<T2, holds_at(active(Y), T2), holds_at(bind(R, Pold), T2).
+happen(transferredR(X, Pold, Pnew), T2) :- c(Y), (o(X);p(X)), associate(X, Y), happens(E1, T1), consented(E1, E2), substitutedC(E2, Y, R, Pold, Pnew), happens(E2, T2), T1=<T2, holds_at(active(Y), T2), holds_at(bind(R, Pold), T2).
+happen(transferredP(X, Pold, Pnew), T2) :- c(Y), (o(X);p(X)), associate(X, Y), happens(E1, T1), consented(E1, E2), substitutedC(E2, Y, R, Pold, Pnew), happens(E2, T2), T1=<T2, holds_at(active(Y), T2), holds_at(bind(R, Pold), T2).
+ 
+happen(transferredP(X, Pnew), T2) :- c(Y), happens(E1, T1), consented(E1, E2), substitutedC(E2, Y, R, Pold, Pnew), happens(E2, T2), T1=<T2, holds_at(active(Y), T2), holds_at(bind(R, Pold), T2), happens(E3, T3), subcontracted(E3, Obls, Cnts, Ps), member(X, Obls), member(Y, Cnts), member(Pold, Ps), o(X), T3<T2.
+
+#-------------------------------------------------------------------------------------------
+# Constraints
+#-------------------------------------------------------------------------------------------
