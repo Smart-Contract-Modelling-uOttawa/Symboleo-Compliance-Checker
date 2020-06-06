@@ -1,5 +1,5 @@
 # Requirements
-1- JAVA SE Runtime Environment 18.3 or higher\
+1- JDK 12 or higher\
 2- Eclipse IDE
 
 # Execute in Eclipse IDE
@@ -7,7 +7,10 @@
 2- Clone source code in the folder\
 Git clone https://github.com/Smart-Contract-Modelling-uOttawa/Symboleo-Compliance-Checker.git \
 3- Open the project in Eclipse IDE\
-4- under Symboleo/it.unibo.ai.rec.engine.tuprolog right click on App.java and run as java application.
+4- Follow windows->preference->java->installed JREs and add JDK 12 or upper.
+5- Right click on the project-> Run As-> Maven Clean
+6- Right click on the project-> Run As-> Maven Build ->  set 'compile' as lifecycle of Maven and then press 'run' button
+7- under Symboleo/it.unibo.ai.rec.engine.tuprolog right click on App.java and run as java application.
 
 # Execute runnable Jar file
 1- Download Symboleo.jar from [release 0.1](https://github.com/Smart-Contract-Modelling-uOttawa/Symboleo-Compliance-Checker/releases/tag/0.1)\
