@@ -144,7 +144,8 @@ public class ComplianceChecker {
 			System.out.println("\n############################################");
 			// Shutdown engine
 			engine.shutDown();
-		}		
+		}
+		System.out.println("\n\n\n All traces executed.");
 	}
 	
 	String initializeAxioms(List<String> initials) {

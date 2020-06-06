@@ -6,9 +6,9 @@ public class App {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {		
-		if(args.length<3) {			
+		if(args.length<3) {		
 			System.out.println("Reasoner is running ...");
-			ComplianceChecker checker = new ComplianceChecker("sample\\sog_freight\\axioms.txt", "sample\\sog_freight\\domdependentAxioms.txt", "sample\\sog_freight\\traces.json");
+			ComplianceChecker checker = new ComplianceChecker("sample/sog_freight/axioms.txt", "sample/sog_freight/domdependentAxioms.txt", "sample/sog_freight/traces.json");
 			checker.check();
 		}
 		else if(args.length == 3) {
