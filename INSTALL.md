@@ -7,9 +7,9 @@
 2- Clone source code in the folder\
 Git clone https://github.com/Smart-Contract-Modelling-uOttawa/Symboleo-Compliance-Checker.git \
 3- Open the project in Eclipse IDE\
-4- Follow windows->preference->java->installed JREs and add JDK 12 or upper.
-5- Right click on the project-> Run As-> Maven Clean
-6- Right click on the project-> Run As-> Maven Build ->  set 'compile' in Goal field and then press 'run' button
+4- Follow windows->preference->java->installed JREs and add JDK 12 or upper.\
+5- Right click on the project-> Run As-> Maven Clean\
+6- Right click on the project-> Run As-> Maven Build ->  set 'compile' in Goal field and then press 'run' button\
 7- under Symboleo/it.unibo.ai.rec.engine.tuprolog right click on App.java and run as java application.
 
 # Execute runnable Jar file
