@@ -1,1 +1,116 @@
+[
+	{
+		"name": "0-submitting a Bid by DERP=>P5,P4",
+		"description": "What if DERP submits a Bid?",
+		"initials": ["transactiveEnergy(cTransEnerAgree, caISO, dERP)"],
+		"attributes": ["type(bidPreparedByDERP, bidPrepared)", "proposedBid(bidPreparedByDERP, bidId)",
+		               "type(bidSubmittedByDERP, bidSubmitted)", "proposedBid(bidSubmittedByDERP, bidId)",
+		               "type(bidAcceptedByCAISO, bidAccepted)", "proposedBid(bidAcceptedByCAISO, bidId)"],
+		"events": ["started(cTransEnerAgree),0", "bidPreparedByDERP,1", "bidSubmittedByDERP,2", "exertionDoneZero,2", "bidAcceptedByCAISO,3", "exertionDone,3"],
+		"expectedStates": ["successfulTermination(pSubmitBid)","successfulTermination(pAcceptBid)"]
+	},
+	{
+		"name": "1-accepting a Bid by CAISO=>P4,O4,O6",
+		"description": "What if DERP submits a Bid AND CAISO accepts the Bid?",
+		"initials": ["transactiveEnergy(cTransEnerAgree, caISO, dERP)"],
+		"attributes": ["type(bidSubmittedByDERP, bidSubmitted)", "proposedBid(bidSubmittedByDERP, bidId)",
+		               "type(energySuppliedByDERP, energySupplied)", "proposedBid(energySuppliedByDERP, bidId)",
+		               "type(creditedInvoiceIssuedByISO, creditedInvoiceIssued)", "invoiceStatus(creditedInvoiceIssuedByISO, credit)",
+		               "type(bidAcceptedByCAISO, bidAccepted)", "proposedBid(bidAcceptedByCAISO, bidId)"],
+		"events": ["started(cTransEnerAgree),0", "bidSubmittedByDERP,1", "bidAcceptedByCAISO,3", "exertionDone,3", "energySuppliedByDERP,4", "creditedInvoiceIssuedByISO,6"],
+		"expectedStates": ["fulfillment(oEnergy)","fulfillment(oCreditInvoice)","successfulTermination(pAcceptBid)"]
+	},
+	{
+		"name": "2-accepting a Bid by CAISO=>P4,O4,O5",
+		"description": "What if DERP submits a Bid AND CAISO accepts the Bid, but DERP fails to supply energy?",
+		"initials": ["transactiveEnergy(cTransEnerAgree, caISO, dERP)"],
+		"attributes": ["type(bidSubmittedByDERP, bidSubmitted)", "proposedBid(bidSubmittedByDERP, bidId)",
+		               "type(energySupplyFailedByDERP, energySupplyFailed)", "proposedBid(energySupplyFailedByDERP, bidId)",
+		               "type(debittedInvoiceIssuedByISO, debittedInvoiceIssued)", "invoiceStatus(debittedInvoiceIssuedByISO, debit)",
+		               "type(bidAcceptedByCAISO, bidAccepted)", "proposedBid(bidAcceptedByCAISO, bidId)"],
+		"events": ["started(cTransEnerAgree),0", "bidSubmittedByDERP,1", "bidAcceptedByCAISO,3", "exertionDone,3", "energySupplyFailedByDERP,4", "debittedInvoiceIssuedByISO,6"],
+		"expectedStates": ["fulfillment(oDebitInvoice)","successfulTermination(pAcceptBid)"]
+	},
+	{
+		"name": "3-paying a credited-invoice by CAISO=>O2",
+		"description": "What if CAISO issues an invoice AND CAISO has to pay?",
+		"initials": ["transactiveEnergy(cTransEnerAgree, caISO, dERP)"],
+		"attributes": ["type(invoiceIssuedByISO, creditedInvoiceIssued)", "invoiceStatus(invoiceIssuedByISO, credit)",
+		               "type(invoicePaidByISO, invoicePaid)"],
+		"events": ["started(cTransEnerAgree),0", "invoiceIssuedByISO,1", "invoicePaidByISO,5"],
+		"expectedStates": ["fulfillment(oPayIso)"]
+	},
+	{
+		"name": "4-issue invoice where status is debit=>O5",
+		"description": "What if DERP fails to supply energy?",
+		"initials": ["transactiveEnergy(cTransEnerAgree, caISO, dERP)"],
+		"attributes": ["type(invoiceIssuedByISO, debittedInvoiceIssued)", "invoiceStatus(invoiceIssuedByISO, debit)",
+		               "type(energySupplyFailedByDERP, energySupplyFailed)", "proposedBid(energySupplyFailedByDERP, bidId)"],
+		"events": ["started(cTransEnerAgree),0", "energySupplyFailedByDERP,1", "invoiceIssuedByISO,5"],
+		"expectedStates": ["fulfillment(oDebitInvoice)"]
+	},
+	{
+		"name": "5-issue invoice where status is credit=>O6",
+		"description": "What if DERP supplies energy?",
+		"initials": ["transactiveEnergy(cTransEnerAgree, caISO, dERP)"],
+		"attributes": ["type(creditedInvoiceIssuedByISO, creditedInvoiceIssued)", "invoiceStatus(creditedInvoiceIssuedByISO, credit)",
+		               "type(energySuppliedByDERP, energySupplied)", "proposedBid(energySuppliedByDERP, bidId)"],
+		"events": ["started(cTransEnerAgree),0", "energySuppliedByDERP,1", "creditedInvoiceIssuedByISO,5"],
+		"expectedStates": ["fulfillment(oCreditInvoice)"]
+	},
+	{
+		"name": "6-paying a credited-invoice by CAISO=>O2",
+		"description": "What if CAISO issues an invoice AND CAISO has to pay?",
+		"initials": ["transactiveEnergy(cTransEnerAgree, caISO, dERP)"],
+		"attributes": ["type(creditedInvoiceIssuedByISO, creditedInvoiceIssued)", "invoiceStatus(creditedInvoiceIssuedByISO, credit)",
+		               "type(invoicePaidByISO, invoicePaid)"],
+		"events": ["started(cTransEnerAgree),0", "creditedInvoiceIssuedByISO,1", "invoicePaidByISO,5"],
+		"expectedStates": ["fulfillment(oPayIso)"]
+	},
+	{
+		"name": "7-paying a debited-invoice by DERP=>O3",
+		"description": "What if CAISO issues an invoice AND DERP has to pay?",
+		"initials": ["transactiveEnergy(cTransEnerAgree, caISO, dERP)"],
+		"attributes": ["type(debittedInvoiceIssuedByISO, debittedInvoiceIssued)", "invoiceStatus(debittedInvoiceIssuedByISO, debit)",
+		               "type(invoicePaidByDERP, invoicePaid)"],
+		"events": ["started(cTransEnerAgree),0", "debittedInvoiceIssuedByISO,1", "invoicePaidByDERP,5"],
+		"expectedStates": ["fulfillment(oPaySup)"]
+	},
+	{
+		"name": "8-terminating the whole contract by DERP=>P3",
+		"description": "What if DERP wishes to terminate the whole contract?",
+		"initials": ["transactiveEnergy(cTransEnerAgree, caISO, dERP)"],
+		"attributes": ["type(terminationNoticeIssuedByDERP, terminationNoticeIssued)"],
+		"events": ["started(cTransEnerAgree),0", "terminationNoticeIssuedByDERP,1", "exertionDone,91"],
+		"expectedStates": ["successfulTermination(pTermSup)", "unsuccessfulTermination(cTransEnerAgree)"]
+	},
+	{
+		"name": "9-terminating the whole contract by CAISO=>P2",
+		"description": "What if DERP fails to pay overdue invoice?",
+		"initials": ["transactiveEnergy(cTransEnerAgree, caISO, dERP)"],
+		"attributes": ["type(overdueFailedByDERP, overdueFailed)"],
+		"events": ["started(cTransEnerAgree),0", "overdueFailedByDERP,1", "exertionDoneTen,1"],
+		"expectedStates": ["successfulTermination(pTermIso)", "unsuccessfulTermination(cTransEnerAgree)"]
+	},
+	{
+		"name": "10-issuing an overdue invoice CAISO=>P1,O1",
+		"description": "What if DERP fails to pay an invoice AND CAISO issues an overdue invoice?",
+		"initials": ["transactiveEnergy(cTransEnerAgree, caISO, dERP)"],
+		"attributes": ["type(invoiceFailedByDERP, invoiceFailed)",
+		               "type(overduePaidByDERP, overduePaid)",
+		               "type(overdueIssuedByISO, overdueIssued)", "overdueStatus(overdueIssuedByISO, debit)"],
+		"events": ["started(cTransEnerAgree),0", "invoiceFailedByDERP,1", "overdueIssuedByISO,5", "exertionDone,5", "overduePaidByDERP,6"],
+		"expectedStates": ["fulfillment(oOverdue)","successfulTermination(pOverdue)"]
+	},
+	{
+		"name": "11-issuing an overdue invoice CAISO=>P1,O1,P2",
+		"description": "What if DERP fails to pay an invoice AND CAISO issues an overdue invoice AND DERP fails to pay it?",
+		"initials": ["transactiveEnergy(cTransEnerAgree, caISO, dERP)"],
+		"attributes": ["type(invoiceFailedByDERP, invoiceFailed)",
+		               "type(overdueFailedByDERP, overdueFailed)",
+		               "type(overdueIssuedByISO, overdueIssued)", "overdueStatus(overdueIssuedByISO, debit)"],
+		"events": ["started(cTransEnerAgree),0", "invoiceFailedByDERP,1", "overdueIssuedByISO,5", "exertionDone,5", "overdueFailedByDERP,6", "exertionDoneTen,6"],
+		"expectedStates": ["successfulTermination(pOverdue)","successfulTermination(pTermIso)"]
+	}
+]
 
