@@ -1,1 +1,245 @@
+#-------------------------------------------------------------------------------------------
+# Predicates of domain-dependent-Axioms should be mentioned here:
+#...
+# Predicates of domain-independent-Axioms should be mentioned here:
+# associate, deadline, bind, ant, cons, event, c, o, p, assignedR, subcontracted, consented, role, asset
+# Underline should be added to the beginning of key words (e.g., started()).
+# A discussion about successful/unsuccessful termination?!!
+# The contradiction at time 95 when the whole contract is terminated unsuccessfully by a successfully terminated power!
+# Transactive Energy Contract
+#-------------------------------------------------------------------------------------------	
+	#-------------------------------------------------------------------------------------------
+	# Domain
+	#-------------------------------------------------------------------------------------------
+	c(X) :- initially(transactiveEnergy(X, _, _)).
+	
+	role(iso).
+	role(supplier).
+	
+	asset(X) :- dispatchInstruction(X).
+	dispatchInstruction(X) :- energyQuality(X).
+	asset(X) :- money(X).
+	asset(X) :- energy(X).
+	asset(X) :- bid(X).
+	asset(X) :- invoice(X).
+	
+	event(X) :- contractStarted(X).
+	event(X) :- bidSubmitted(X).
+	event(X) :- bidAccepted(X).
+	event(X) :- energySupplied(X).
+	event(X) :- energySupplyFailed(X).
+	event(X) :- debittedInvoiceIssued(X).
+	event(X) :- creditedInvoiceIssued(X).
+	event(X) :- invoicePaid(X).
+	event(X) :- invoiceFailed(X).
+	event(X) :- overdueIssued(X).
+	event(X) :- overduePaid(X).
+	event(X) :- overdueFailed(X).
+	event(X) :- terminationNoticeIssued(X).
+	#event(X) :- consented(X, _).
+	event(X) :- bidPrepared(X).	
+		
+	#-------------------------------------------------------------------------------------------
+	# Declarations
+	#-------------------------------------------------------------------------------------------
+	
+	initially(bind(iso, X)) :- initially(transactiveEnergy(_, X, _)).
+	initially(bind(supplier, X)) :- initially(transactiveEnergy(_, _, X)).
 
+	#----------
+	# Events
+	#----------
+	bidSubmitted(E) :- happens(E, T), holds_at(type(E, bidSubmitted), T), holds_at(proposedBid(E, bidId), T).
+	bidAccepted(E) :- happens(E, T), holds_at(type(E, bidAccepted), T), holds_at(proposedBid(E, bidId), T).
+	energySupplied(E) :- happens(E, T), holds_at(type(E, energySupplied), T), holds_at(proposedBid(E, bidId), T).
+	energySupplyFailed(E) :- happens(E, T), holds_at(type(E, energySupplyFailed), T), holds_at(proposedBid(E, bidId), T).
+	debittedInvoiceIssued(E) :- happens(E, T), holds_at(type(E, debittedInvoiceIssued), T), holds_at(invoiceStatus(E, debit), T).
+	creditedInvoiceIssued(E) :- happens(E, T), holds_at(type(E, creditedInvoiceIssued), T), holds_at(invoiceStatus(E, credit), T).
+	invoicePaid(E) :- happens(E, T), holds_at(type(E, invoicePaid), T).
+	invoiceFailed(E) :- happens(E, T), holds_at(type(E, invoiceFailed), T).
+	overdueIssued(E) :- happens(E, T), holds_at(type(E, overdueIssued), T), holds_at(overdueStatus(E, debit), T).
+	overduePaid(E) :- happens(E, T), holds_at(type(E, overduePaid), T).
+	overdueFailed(E) :- happens(E, T), holds_at(type(E, overdueFailed), T).
+	terminationNoticeIssued(E) :- happens(E, T), holds_at(type(E, terminationNoticeIssued), T).
+	contractStarted(E) :- happens(E, T), initiates(E, inEffect(cTransEnerAgree)).
+	bidPrepared(E) :- happens(E, T), holds_at(type(E, bidPrepared), T), holds_at(proposedBid(E, bidId), T).
+	
+	assignedR(E, L, Pold, Pnew) :- happens(E, T), holds_at(type(E, assignedR), T), holds_at(from(E, Pold), T), holds_at(to(E, Pnew), T), holds_at(legalPos(E, L), T).
+	consented(E, X) :- happens(E, T), holds_at(type(E, consented), T), holds_at(to(E, X), T).
+	
+		
+	#-------------------------------------------------------------------------------------------
+	# Contract
+	#-------------------------------------------------------------------------------------------
+	initially(form(X)) :- initially(transactiveEnergy(X, _, _)).
+	
+	#-------------------------------------------------------------------------------------------
+	# Obligations
+	#-------------------------------------------------------------------------------------------
+	
+	#-------------------------
+	
+	o(X) :- instance(o1, X).
+	associate(X, cTransEnerAgree) :- instance(o1, X).
+	
+	initially(_, debtor(X, P)) :- instance(o1, X), initially(bind(supplier, P)).
+	initially(_, creditor(X, P)) :- instance(o1, X), initially(bind(iso, P)).
+	
+	ant(oOverdue) :- true.
+	initiates(E, trigger(o1, oOverdue)) :- happens(E, T), overdueIssued(E), holds_at(inEffect(cTransEnerAgree), T).
+	initiates(E, cons(oOverdue)) :- instance(o1, X), overduePaid(E), happens(E, T).
+	
+	#-------------------------
+	
+	o(X) :- instance(o2, X).
+	associate(X, cTransEnerAgree) :- instance(o2, X).
+	
+	initially(_, debtor(X, P)) :- instance(o2, X), initially(bind(iso, P)).
+	initially(_, creditor(X, P)) :- instance(o2, X), initially(bind(supplier, P)).
+	
+	ant(oPayIso) :- true.
+	initiates(E, trigger(o2, oPayIso)) :- happens(E, T), creditedInvoiceIssued(E), holds_at(inEffect(cTransEnerAgree), T).
+	initiates(E, cons(oPayIso)) :- instance(o2, X), invoicePaid(E), happens(E, T).
+	
+	#-------------------------
+	
+	o(X) :- instance(o3, X).
+	associate(X, cTransEnerAgree) :- instance(o3, X).
+	
+	initially(_, debtor(X, P)) :- instance(o3, X), initially(bind(supplier, P)).
+	initially(_, creditor(X, P)) :- instance(o3, X), initially(bind(iso, P)).
+	
+	ant(oPaySup) :- true.
+	initiates(E, trigger(o3, oPaySup)) :- happens(E, T), debittedInvoiceIssued(E), holds_at(inEffect(cTransEnerAgree), T).
+	initiates(E, cons(oPaySup)) :- instance(o3, X), invoicePaid(E), happens(E, T).
+	
+	#-------------------------
+	
+	o(X) :- instance(o4, X).
+	associate(X, cTransEnerAgree) :- instance(o4, X).
+	
+	initially(_, debtor(X, P)) :- instance(o4, X), initially(bind(supplier, P)).
+	initially(_, creditor(X, P)) :- instance(o4, X), initially(bind(iso, P)).
+	
+	ant(oEnergy) :- true.
+	initiates(E, trigger(o4, oEnergy)) :- happens(E, T), bidAccepted(E), holds_at(inEffect(cTransEnerAgree), T).
+	initiates(E, cons(oEnergy)) :- instance(o4, X), energySupplied(E), happens(E, T), happens(exerted(pAcceptBid), T2), T is T2+1.
+	
+	#-------------------------
+	
+	o(X) :- instance(o5, X).
+	associate(X, cTransEnerAgree) :- instance(o5, X).
+	
+	initially(_, debtor(X, P)) :- instance(o5, X), initially(bind(iso, P)).
+	initially(_, creditor(X, P)) :- instance(o5, X), initially(bind(supplier, P)).
+	
+	ant(oDebitInvoice) :- true.
+	initiates(E, trigger(o5, oDebitInvoice)) :- happens(E, T), energySupplyFailed(E), holds_at(inEffect(cTransEnerAgree), T).
+	initiates(E, cons(oDebitInvoice)) :- instance(o5, X), debittedInvoiceIssued(E), happens(E, T).
+	
+	#-------------------------
+	
+	o(X) :- instance(o6, X).
+	associate(X, cTransEnerAgree) :- instance(o6, X).
+	
+	initially(_, debtor(X, P)) :- instance(o6, X), initially(bind(iso, P)).
+	initially(_, creditor(X, P)) :- instance(o6, X), initially(bind(supplier, P)).
+	
+	ant(oCreditInvoice) :- true.
+	initiates(E, trigger(o6, oCreditInvoice)) :- happens(E, T), energySupplied(E), holds_at(inEffect(cTransEnerAgree), T).
+	initiates(E, cons(oCreditInvoice)) :- instance(o6, X), creditedInvoiceIssued(E), happens(E, T).
+	
+		
+	#-------------------------------------------------------------------------------------------
+	# Powers
+	#-------------------------------------------------------------------------------------------
+	
+	#-------------------------
+	
+	p(X) :- instance(p1, X).
+	associate(X, cTransEnerAgree) :- instance(p1, X).
+	
+	initially(_, debtor(X, P)) :- instance(p1, X), initially(bind(supplier, P)).
+	initially(_, creditor(X, P)) :- instance(p1, X), initially(bind(iso, P)).
+	
+	ant(pOverdue) :- true.
+	initiates(E, trigger(p1, pOverdue)) :- happens(E, T), invoiceFailed(E).
+	creates(o1, oOverdue) :- cons(pOverdue).
+	happens(exerted(pOverdue), T) :- happens(exertionDone, T).
+	
+	#-------------------------
+	
+	p(X) :- instance(p2, X).
+	associate(X, cTransEnerAgree) :- instance(p2, X).
+	
+	initially(_, debtor(X, P)) :- instance(p2, X), initially(bind(supplieriso, P)).
+	initially(_, creditor(X, P)) :- instance(p2, X), initially(bind(iso, P)).
+	
+	ant(pTermIso) :- true.
+	initiates(E, trigger(p2, pTermIso)) :- happens(E, T), overdueFailed(E).
+	unsuccessfulTermination(cTransEnerAgree) :- cons(pTermIso).
+	happens(exerted(pTermIso), T) :- happens(exertionDoneTen, T).
+	
+	#-------------------------
+	
+	p(X) :- instance(p3, X).
+	associate(X, cTransEnerAgree) :- instance(p3, X).
+	
+	initially(_, debtor(X, P)) :- instance(p3, X), initially(bind(iso, P)).
+	initially(_, creditor(X, P)) :- instance(p3, X), initially(bind(supplier, P)).
+	
+	initiates(E, ant(pTermSup)) :- happens(E, T), terminationNoticeIssued(E).
+	initiates(E, trigger(p3, pTermSup)) :- contractStarted(E).
+	unsuccessfulTermination(cTransEnerAgree) :- cons(pTermSup).
+	happens(exerted(pTermSup), T) :- happens(exertionDone, T).
+	
+	#-------------------------
+	
+	p(X) :- instance(p4, X).
+	associate(X, cTransEnerAgree) :- instance(p4, X).
+	
+	initially(_, debtor(X, P)) :- instance(p4, X), initially(bind(supplier, P)).
+	initially(_, creditor(X, P)) :- instance(p4, X), initially(bind(iso, P)).
+	
+	ant(pAcceptBid) :- true.
+	initiates(E, trigger(p4, pAcceptBid)) :- happens(E, T), bidSubmitted(E).
+	creates(o4, oEnergy) :- cons(pAcceptBid).
+	happens(exerted(pAcceptBid), T) :- happens(exertionDone, T).
+	
+	#-------------------------
+	
+	p(X) :- instance(p5, X).
+	associate(X, cTransEnerAgree) :- instance(p5, X).
+	
+	initially(_, debtor(X, P)) :- instance(p5, X), initially(bind(iso, P)).
+	initially(_, creditor(X, P)) :- instance(p5, X), initially(bind(supplier, P)).
+	
+	ant(pSubmitBid) :- true.
+	initiates(E, trigger(p5, pSubmitBid)) :- happens(E, T), bidPrepared(E).
+	initiates(E, cons(pSubmitBid)) :- happens(E, T), bidSubmitted(E).
+	happens(exerted(pSubmitBid), T) :- happens(exertionDoneZero, T).
+	
+	#-------------------------
+	
+	
+	#-------------------------
+	# Assignment
+	#-------------------------
+	
+	#p(X) :- instance(p5, X).
+	#associate(X, cTransEnerAgree) :- instance(p5, X).
+	
+	#initially(_, debtor(X, P)) :- instance(p5, X), initially(bind(iso, P)).
+	#initially(_, creditor(X, P)) :- instance(p5, X), initially(bind(supplier, P)).
+	
+	#initiates(E, ant(pAssignSup)) :- happens(E, T), consented(E, supplier).
+	#trigger(p5, pAssignSup) :- true.
+	#initiates(E, cons(pAssignSup)) :- assignedR(E, L, supplier, thirdParty).
+	#happens(exerted(pAssignSup), T) :- happens(exertionDone, T).
+	
+	#-------------------------
+	
+	
+	
+
+#-------------------------------------------------------------------------------------------
