@@ -88,6 +88,7 @@
 	ant(oOverdue) :- true.
 	initiates(E, trigger(o1, oOverdue)) :- happens(E, T), overdueIssued(E), holds_at(inEffect(cTransEnerAgree), T).
 	initiates(E, cons(oOverdue)) :- instance(o1, X), overduePaid(E), happens(E, T).
+	deadline(cons(X), Tp) :- instance(o1, X), happens(overdueIssued, T), Tp is T+30.
 	
 	#-------------------------
 	
@@ -100,6 +101,7 @@
 	ant(oPayIso) :- true.
 	initiates(E, trigger(o2, oPayIso)) :- happens(E, T), creditedInvoiceIssued(E), holds_at(inEffect(cTransEnerAgree), T).
 	initiates(E, cons(oPayIso)) :- instance(o2, X), invoicePaid(E), happens(E, T).
+	deadline(cons(X), Tp) :- instance(o2, X), happens(creditedInvoiceIssued, T), Tp is T+4.
 	
 	#-------------------------
 	
@@ -112,6 +114,7 @@
 	ant(oPaySup) :- true.
 	initiates(E, trigger(o3, oPaySup)) :- happens(E, T), debittedInvoiceIssued(E), holds_at(inEffect(cTransEnerAgree), T).
 	initiates(E, cons(oPaySup)) :- instance(o3, X), invoicePaid(E), happens(E, T).
+	deadline(cons(X), Tp) :- instance(o3, X), happens(debittedInvoiceIssued, T), Tp is T+4.
 	
 	#-------------------------
 	
@@ -124,6 +127,7 @@
 	ant(oEnergy) :- true.
 	initiates(E, trigger(o4, oEnergy)) :- happens(E, T), bidAccepted(E), holds_at(inEffect(cTransEnerAgree), T).
 	initiates(E, cons(oEnergy)) :- instance(o4, X), energySupplied(E), happens(E, T), happens(exerted(pAcceptBid), T2), T is T2+1.
+	deadline(cons(X), Tp) :- instance(o4, X), happens(exerted(pAcceptBid), T), Tp is T+1.
 	
 	#-------------------------
 	
@@ -136,6 +140,7 @@
 	ant(oDebitInvoice) :- true.
 	initiates(E, trigger(o5, oDebitInvoice)) :- happens(E, T), energySupplyFailed(E), holds_at(inEffect(cTransEnerAgree), T).
 	initiates(E, cons(oDebitInvoice)) :- instance(o5, X), debittedInvoiceIssued(E), happens(E, T).
+	deadline(cons(X), Tp) :- instance(o5, X), happens(energySupplyFailed, T), Tp is T+3.
 	
 	#-------------------------
 	
@@ -148,6 +153,7 @@
 	ant(oCreditInvoice) :- true.
 	initiates(E, trigger(o6, oCreditInvoice)) :- happens(E, T), energySupplied(E), holds_at(inEffect(cTransEnerAgree), T).
 	initiates(E, cons(oCreditInvoice)) :- instance(o6, X), creditedInvoiceIssued(E), happens(E, T).
+	deadline(cons(X), Tp) :- instance(o6, X), happens(energySupplied, T), Tp is T+3.
 	
 		
 	#-------------------------------------------------------------------------------------------
