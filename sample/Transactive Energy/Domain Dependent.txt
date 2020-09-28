@@ -226,19 +226,35 @@
 	# Assignment
 	#-------------------------
 	
-	#p(X) :- instance(p5, X).
-	#associate(X, cTransEnerAgree) :- instance(p5, X).
+	p(X) :- instance(p6, X).
+	associate(X, cTransEnerAgree) :- instance(p6, X).
 	
-	#initially(_, debtor(X, P)) :- instance(p5, X), initially(bind(iso, P)).
-	#initially(_, creditor(X, P)) :- instance(p5, X), initially(bind(supplier, P)).
+	initially(_, debtor(X, P)) :- instance(p6, X), initially(bind(supplier, P)).
+	initially(_, creditor(X, P)) :- instance(p6, X), initially(bind(iso, P)).
 	
-	#initiates(E, ant(pAssignSup)) :- happens(E, T), consented(E, supplier).
-	#trigger(p5, pAssignSup) :- true.
-	#initiates(E, cons(pAssignSup)) :- assignedR(E, L, supplier, thirdParty).
-	#happens(exerted(pAssignSup), T) :- happens(exertionDone, T).
+	
+	initiates(E, ant(pAssignISO)) :- happens(E, T), consented(E, X), holds_at(type(X, assignedR), T).
+	initiates(E, trigger(p6, pAssignISO)) :- contractStarted(E).
+	asghar :- cons(pAssignISO).
+
+	happens(exerted(pAssignISO), 4).
 	
 	#-------------------------
 	
+	p(X) :- instance(p7, X).
+	associate(X, cTransEnerAgree) :- instance(p7, X).
+	
+	initially(_, debtor(X, P)) :- instance(p7, X), initially(bind(iso, P)).
+	initially(_, creditor(X, P)) :- instance(p7, X), initially(bind(supplier, P)).
+	
+	
+	initiates(E, ant(pAssignSupp)) :- happens(E, T), consented(E, X), holds_at(type(X, assignedR), T).
+	initiates(E, trigger(p7, pAssignSupp)) :- contractStarted(E).
+	asghar :- cons(pAssignSupp).
+
+	happens(exerted(pAssignSupp), 4).
+	
+	#-------------------------
 	
 	
 
