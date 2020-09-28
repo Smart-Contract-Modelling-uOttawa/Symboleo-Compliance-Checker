@@ -202,3 +202,111 @@ Expected Situations: [fulfillment(oEnergy), fulfillment(oCreditInvoice), success
 
 ############################################
 
+SituationModel: 
+-------------------
+******Situation fulfillment(oDebitInvoice)
+	State 'true':
+		-> (6, ...
+******Situation type(bidSubmittedByDERP,bidSubmitted)
+	State 'true':
+		-> (-1, ...
+******Situation bind(iso,caISO)
+	State 'true':
+		-> (-1, ...
+******Situation type(debittedInvoiceIssuedByISO,debittedInvoiceIssued)
+	State 'true':
+		-> (-1, ...
+******Situation trigger(o4,oEnergy)
+	State 'true':
+		-> (3, ...
+******Situation inEffect(oDebitInvoice)
+	State 'true':
+		-> (4, 6]
+******Situation proposedBid(bidSubmittedByDERP,bidId)
+	State 'true':
+		-> (-1, ...
+******Situation active(oPaySup)
+	State 'true':
+		-> (6, ...
+******Situation transactiveEnergy(cTransEnerAgree,caISO,dERP)
+	State 'true':
+		-> (-1, ...
+******Situation trigger(o3,oPaySup)
+	State 'true':
+		-> (6, ...
+******Situation trigger(p4,pAcceptBid)
+	State 'true':
+		-> (1, ...
+******Situation cons(oDebitInvoice)
+	State 'true':
+		-> (6, ...
+******Situation inEffect(oEnergy)
+	State 'true':
+		-> (3, ...
+******Situation active(oDebitInvoice)
+	State 'true':
+		-> (4, 6]
+******Situation inEffect(oPaySup)
+	State 'true':
+		-> (6, ...
+******Situation active(cTransEnerAgree)
+	State 'true':
+		-> (0, ...
+******Situation trigger(o5,oDebitInvoice)
+	State 'true':
+		-> (4, ...
+******Situation active(pAcceptBid)
+	State 'true':
+		-> (1, 3]
+******Situation successfulTermination(pAcceptBid)
+	State 'true':
+		-> (3, ...
+******Situation inEffect(cTransEnerAgree)
+	State 'true':
+		-> (0, ...
+******Situation cons(pSubmitBid)
+	State 'true':
+		-> (1, ...
+******Situation type(energySupplyFailedByDERP,energySupplyFailed)
+	State 'true':
+		-> (-1, ...
+******Situation trigger(p3,pTermSup)
+	State 'true':
+		-> (0, ...
+******Situation invoiceStatus(debittedInvoiceIssuedByISO,debit)
+	State 'true':
+		-> (-1, ...
+******Situation inEffect(pAcceptBid)
+	State 'true':
+		-> (1, 3]
+******Situation active(oEnergy)
+	State 'true':
+		-> (3, ...
+******Situation proposedBid(energySupplyFailedByDERP,bidId)
+	State 'true':
+		-> (-1, ...
+******Situation form(cTransEnerAgree)
+	State 'true':
+		-> (-1, 0]
+******Situation type(bidAcceptedByCAISO,bidAccepted)
+	State 'true':
+		-> (-1, ...
+******Situation bind(supplier,dERP)
+	State 'true':
+		-> (-1, ...
+******Situation create(pTermSup)
+	State 'true':
+		-> (0, ...
+******Situation proposedBid(bidAcceptedByCAISO,bidId)
+	State 'true':
+		-> (-1, ...
+
+Trace0: 2-accepting a Bid by CAISO=>P4,O4,O5
+Description:What if DERP submits a Bid AND CAISO accepts the Bid, but DERP fails to supply energy?
+Active Situations: [active(cTransEnerAgree), active(oEnergy), cons(pSubmitBid), create(pTermSup), inEffect(cTransEnerAgree), inEffect(oEnergy), successfulTermination(pAcceptBid), bind(iso,caISO), bind(supplier,dERP), invoiceStatus(debittedInvoiceIssuedByISO,debit), proposedBid(bidAcceptedByCAISO,bidId), proposedBid(bidSubmittedByDERP,bidId), proposedBid(energySupplyFailedByDERP,bidId), trigger(o4,oEnergy), trigger(o5,oDebitInvoice), trigger(p3,pTermSup), trigger(p4,pAcceptBid), type(bidAcceptedByCAISO,bidAccepted), type(bidSubmittedByDERP,bidSubmitted), type(debittedInvoiceIssuedByISO,debittedInvoiceIssued), type(energySupplyFailedByDERP,energySupplyFailed), transactiveEnergy(cTransEnerAgree,caISO,dERP), active(oPaySup), cons(oDebitInvoice), fulfillment(oDebitInvoice), inEffect(oPaySup), trigger(o3,oPaySup)]
+Expected Situations: [fulfillment(oDebitInvoice), successfulTermination(pAcceptBid)]
+
+--> It is compliant
+
+############################################
+
