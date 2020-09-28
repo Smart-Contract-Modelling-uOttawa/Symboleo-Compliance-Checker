@@ -642,3 +642,285 @@ Expected Situations: [fulfillment(oPaySup)]
 --> It is compliant
 
 ############################################
+
+SituationModel: 
+-------------------
+******Situation successfulTermination(pTermSup)
+	State 'true':
+		-> (91, ...
+******Situation form(cTransEnerAgree)
+	State 'true':
+		-> (-1, 0]
+******Situation type(terminationNoticeIssuedByDERP,terminationNoticeIssued)
+	State 'true':
+		-> (-1, ...
+******Situation active(pTermSup)
+	State 'true':
+		-> (1, 91]
+******Situation trigger(p3,pTermSup)
+	State 'true':
+		-> (0, ...
+******Situation inEffect(cTransEnerAgree)
+	State 'true':
+		-> (0, 91]
+******Situation unsuccessfulTermination(pTermSup)
+	State 'true':
+		-> (91, ...
+******Situation create(pTermSup)
+	State 'true':
+		-> (0, 1]
+******Situation inEffect(pTermSup)
+	State 'true':
+		-> (1, 91]
+******Situation bind(supplier,dERP)
+	State 'true':
+		-> (-1, ...
+******Situation bind(iso,caISO)
+	State 'true':
+		-> (-1, ...
+******Situation unsuccessfulTermination(cTransEnerAgree)
+	State 'true':
+		-> (91, ...
+******Situation transactiveEnergy(cTransEnerAgree,caISO,dERP)
+	State 'true':
+		-> (-1, ...
+******Situation active(cTransEnerAgree)
+	State 'true':
+		-> (0, 91]
+******Situation ant(pTermSup)
+	State 'true':
+		-> (1, ...
+
+Trace8: 8-terminating the whole contract by DERP=>P3
+Description:What if DERP wishes to terminate the whole contract?
+Active Situations: [ant(pTermSup), bind(iso,caISO), bind(supplier,dERP), trigger(p3,pTermSup), type(terminationNoticeIssuedByDERP,terminationNoticeIssued), transactiveEnergy(cTransEnerAgree,caISO,dERP), successfulTermination(pTermSup), unsuccessfulTermination(cTransEnerAgree), unsuccessfulTermination(pTermSup)]
+Expected Situations: [successfulTermination(pTermSup), unsuccessfulTermination(cTransEnerAgree)]
+
+--> It is compliant
+
+############################################
+
+SituationModel: 
+-------------------
+******Situation form(cTransEnerAgree)
+	State 'true':
+		-> (-1, 0]
+******Situation trigger(p3,pTermSup)
+	State 'true':
+		-> (0, ...
+******Situation type(overdueFailedByDERP,overdueFailed)
+	State 'true':
+		-> (-1, ...
+******Situation inEffect(cTransEnerAgree)
+	State 'true':
+		-> (0, 1]
+******Situation inEffect(pTermIso)
+	State 'true':
+		-> (1, ...
+******Situation successfulTermination(pTermIso)
+	State 'true':
+		-> (1, ...
+******Situation create(pTermSup)
+	State 'true':
+		-> (0, ...
+******Situation active(pTermIso)
+	State 'true':
+		-> (1, ...
+******Situation bind(supplier,dERP)
+	State 'true':
+		-> (-1, ...
+******Situation bind(iso,caISO)
+	State 'true':
+		-> (-1, ...
+******Situation unsuccessfulTermination(cTransEnerAgree)
+	State 'true':
+		-> (1, ...
+******Situation transactiveEnergy(cTransEnerAgree,caISO,dERP)
+	State 'true':
+		-> (-1, ...
+******Situation active(cTransEnerAgree)
+	State 'true':
+		-> (0, 1]
+******Situation trigger(p2,pTermIso)
+	State 'true':
+		-> (1, ...
+******Situation unsuccessfulTermination(pTermIso)
+	State 'true':
+		-> (1, ...
+
+Trace9: 9-terminating the whole contract by CAISO=>P2
+Description:What if DERP fails to pay overdue invoice?
+Active Situations: [create(pTermSup), bind(iso,caISO), bind(supplier,dERP), trigger(p3,pTermSup), type(overdueFailedByDERP,overdueFailed), transactiveEnergy(cTransEnerAgree,caISO,dERP), active(pTermIso), inEffect(pTermIso), successfulTermination(pTermIso), unsuccessfulTermination(cTransEnerAgree), unsuccessfulTermination(pTermIso), trigger(p2,pTermIso)]
+Expected Situations: [successfulTermination(pTermIso), unsuccessfulTermination(cTransEnerAgree)]
+
+--> It is compliant
+
+############################################
+
+SituationModel: 
+-------------------
+******Situation bind(iso,caISO)
+	State 'true':
+		-> (-1, ...
+******Situation overdueStatus(overdueIssuedByISO,debit)
+	State 'true':
+		-> (-1, ...
+******Situation transactiveEnergy(cTransEnerAgree,caISO,dERP)
+	State 'true':
+		-> (-1, ...
+******Situation inEffect(pOverdue)
+	State 'true':
+		-> (1, 5]
+******Situation active(pOverdue)
+	State 'true':
+		-> (1, 5]
+******Situation type(overdueIssuedByISO,overdueIssued)
+	State 'true':
+		-> (-1, ...
+******Situation fulfillment(oOverdue)
+	State 'true':
+		-> (6, ...
+******Situation active(cTransEnerAgree)
+	State 'true':
+		-> (0, 6]
+******Situation successfulTermination(pOverdue)
+	State 'true':
+		-> (5, ...
+******Situation inEffect(cTransEnerAgree)
+	State 'true':
+		-> (0, 6]
+******Situation type(overduePaidByDERP,overduePaid)
+	State 'true':
+		-> (-1, ...
+******Situation cons(oOverdue)
+	State 'true':
+		-> (6, ...
+******Situation trigger(p3,pTermSup)
+	State 'true':
+		-> (0, ...
+******Situation form(cTransEnerAgree)
+	State 'true':
+		-> (-1, 0]
+******Situation successfulTermination(cTransEnerAgree)
+	State 'true':
+		-> (6, ...
+******Situation inEffect(oOverdue)
+	State 'true':
+		-> (5, 6]
+******Situation trigger(o1,oOverdue)
+	State 'true':
+		-> (5, ...
+******Situation active(oOverdue)
+	State 'true':
+		-> (5, 6]
+******Situation bind(supplier,dERP)
+	State 'true':
+		-> (-1, ...
+******Situation trigger(p1,pOverdue)
+	State 'true':
+		-> (1, ...
+******Situation create(pTermSup)
+	State 'true':
+		-> (0, ...
+******Situation type(invoiceFailedByDERP,invoiceFailed)
+	State 'true':
+		-> (-1, ...
+
+Trace10: 10-issuing a written notice of termination by CAISO=>P1,O1
+Description:What if DERP fails to pay an invoice AND CAISO issues a written notice?
+Active Situations: [create(pTermSup), successfulTermination(pOverdue), bind(iso,caISO), bind(supplier,dERP), overdueStatus(overdueIssuedByISO,debit), trigger(o1,oOverdue), trigger(p1,pOverdue), trigger(p3,pTermSup), type(invoiceFailedByDERP,invoiceFailed), type(overdueIssuedByISO,overdueIssued), type(overduePaidByDERP,overduePaid), transactiveEnergy(cTransEnerAgree,caISO,dERP), cons(oOverdue), fulfillment(oOverdue), successfulTermination(cTransEnerAgree)]
+Expected Situations: [fulfillment(oOverdue), successfulTermination(pOverdue)]
+
+--> It is compliant
+
+############################################
+
+SituationModel: 
+-------------------
+******Situation bind(iso,caISO)
+	State 'true':
+		-> (-1, ...
+******Situation overdueStatus(overdueIssuedByISO,debit)
+	State 'true':
+		-> (-1, ...
+******Situation transactiveEnergy(cTransEnerAgree,caISO,dERP)
+	State 'true':
+		-> (-1, ...
+******Situation inEffect(pOverdue)
+	State 'true':
+		-> (1, 5]
+******Situation active(pOverdue)
+	State 'true':
+		-> (1, 5]
+******Situation type(overdueIssuedByISO,overdueIssued)
+	State 'true':
+		-> (-1, ...
+******Situation unsuccessfulTermination(cTransEnerAgree)
+	State 'true':
+		-> (6, ...
+******Situation active(cTransEnerAgree)
+	State 'true':
+		-> (0, 6]
+******Situation successfulTermination(pOverdue)
+	State 'true':
+		-> (5, ...
+******Situation trigger(p2,pTermIso)
+	State 'true':
+		-> (6, ...
+******Situation type(overdueFailedByDERP,overdueFailed)
+	State 'true':
+		-> (-1, ...
+******Situation inEffect(cTransEnerAgree)
+	State 'true':
+		-> (0, 6]
+******Situation trigger(p3,pTermSup)
+	State 'true':
+		-> (0, ...
+******Situation form(cTransEnerAgree)
+	State 'true':
+		-> (-1, 0]
+******Situation inEffect(pTermIso)
+	State 'true':
+		-> (6, ...
+******Situation active(pTermIso)
+	State 'true':
+		-> (6, ...
+******Situation inEffect(oOverdue)
+	State 'true':
+		-> (5, 6]
+******Situation trigger(o1,oOverdue)
+	State 'true':
+		-> (5, ...
+******Situation active(oOverdue)
+	State 'true':
+		-> (5, 6]
+******Situation bind(supplier,dERP)
+	State 'true':
+		-> (-1, ...
+******Situation trigger(p1,pOverdue)
+	State 'true':
+		-> (1, ...
+******Situation create(pTermSup)
+	State 'true':
+		-> (0, ...
+******Situation unsuccessfulTermination(pTermIso)
+	State 'true':
+		-> (6, ...
+******Situation type(invoiceFailedByDERP,invoiceFailed)
+	State 'true':
+		-> (-1, ...
+******Situation successfulTermination(pTermIso)
+	State 'true':
+		-> (6, ...
+******Situation unsuccessfulTermination(oOverdue)
+	State 'true':
+		-> (6, ...
+
+Trace11: 11-issuing an overdue invoice CAISO=>P1,O1,P2
+Description:What if DERP fails to pay an invoice AND CAISO issues an overdue invoice AND DERP fails to pay it?
+Active Situations: [create(pTermSup), successfulTermination(pOverdue), bind(iso,caISO), bind(supplier,dERP), overdueStatus(overdueIssuedByISO,debit), trigger(o1,oOverdue), trigger(p1,pOverdue), trigger(p3,pTermSup), type(invoiceFailedByDERP,invoiceFailed), type(overdueFailedByDERP,overdueFailed), type(overdueIssuedByISO,overdueIssued), transactiveEnergy(cTransEnerAgree,caISO,dERP), active(pTermIso), inEffect(pTermIso), successfulTermination(pTermIso), unsuccessfulTermination(cTransEnerAgree), unsuccessfulTermination(oOverdue), unsuccessfulTermination(pTermIso), trigger(p2,pTermIso)]
+Expected Situations: [successfulTermination(pOverdue), successfulTermination(pTermIso)]
+
+--> It is compliant
+
+############################################
