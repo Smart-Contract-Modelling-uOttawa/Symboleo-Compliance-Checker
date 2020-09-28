@@ -310,3 +310,63 @@ Expected Situations: [fulfillment(oDebitInvoice), successfulTermination(pAcceptB
 
 ############################################
 
+SituationModel: 
+-------------------
+******Situation form(cTransEnerAgree)
+	State 'true':
+		-> (-1, 0]
+******Situation successfulTermination(cTransEnerAgree)
+	State 'true':
+		-> (5, ...
+******Situation cons(oPayIso)
+	State 'true':
+		-> (5, ...
+******Situation inEffect(oPayIso)
+	State 'true':
+		-> (1, 5]
+******Situation trigger(p3,pTermSup)
+	State 'true':
+		-> (0, ...
+******Situation inEffect(cTransEnerAgree)
+	State 'true':
+		-> (0, 5]
+******Situation fulfillment(oPayIso)
+	State 'true':
+		-> (5, ...
+******Situation active(oPayIso)
+	State 'true':
+		-> (1, 5]
+******Situation type(invoicePaidByISO,invoicePaid)
+	State 'true':
+		-> (-1, ...
+******Situation create(pTermSup)
+	State 'true':
+		-> (0, ...
+******Situation trigger(o2,oPayIso)
+	State 'true':
+		-> (1, ...
+******Situation type(invoiceIssuedByISO,creditedInvoiceIssued)
+	State 'true':
+		-> (-1, ...
+******Situation bind(supplier,dERP)
+	State 'true':
+		-> (-1, ...
+******Situation bind(iso,caISO)
+	State 'true':
+		-> (-1, ...
+******Situation transactiveEnergy(cTransEnerAgree,caISO,dERP)
+	State 'true':
+		-> (-1, ...
+******Situation active(cTransEnerAgree)
+	State 'true':
+		-> (0, 5]
+******Situation invoiceStatus(invoiceIssuedByISO,credit)
+	State 'true':
+		-> (-1, ...
+
+Trace0: 3-paying a credited-invoice by CAISO=>O2
+Description:What if CAISO issues an invoice AND CAISO has to pay?
+Active Situations: [create(pTermSup), bind(iso,caISO), bind(supplier,dERP), invoiceStatus(invoiceIssuedByISO,credit), trigger(o2,oPayIso), trigger(p3,pTermSup), type(invoiceIssuedByISO,creditedInvoiceIssued), type(invoicePaidByISO,invoicePaid), transactiveEnergy(cTransEnerAgree,caISO,dERP), cons(oPayIso), fulfillment(oPayIso), successfulTermination(cTransEnerAgree)]
+Expected Situations: [fulfillment(oPayIso)]
+
+--> It is compliant
