@@ -32,13 +32,13 @@
 	role(buyer).
 	role(seller).
 	
-	asset(X) 					:- perishableGood(X).
-	perishableGood(X) 			:- meat(X).
+#	asset(X) 					:- perishableGood(X).
+#	perishableGood(X) 			:- meat(X).
 	
-	event(X) 					:- paid(X).
-	event(X) 					:- paidLate(X).
-	event(X) 					:- disclosed(X).
-	event(X) 					:- delivered(X).
+#	event(X) 					:- paid(X).
+#	event(X) 					:- paidLate(X).
+#	event(X) 					:- disclosed(X).
+#	event(X) 					:- delivered(X).
 
 ## Declarations
 	c(X) 						:- initially(meatSale(X, _, _, _, _, _)).
@@ -49,11 +49,11 @@
 	paymentDueDate(X) 			:- initially(meatSale(_, _, _, _, _, X)).
 	meat(X) 					:- initially(meatSale(_, _, _, X, _, _)).
 	
-	delivered(E) 				:- o1(O), within(E, performer(O, X)), happens(E, T), holds_at(type(E, delivered), T), holds_at(from(E, X), T), holds_at(item(E, meatPacked), T), holds_at(deliveryAddress(E, saintLaurent), T), holds_at(quality(meatPacked, aaa), T).
-	paid(E)						:- o2(O), within(E, performer(O, X)), within(E, rightHolder(O, Y)), happens(E, T), holds_at(type(E, paid), T), holds_at(from(E, X), T), holds_at(to(E, Y), T), holds_at(amount(E, 1000), T).
-	paidLate(E) 				:- o3(O), within(E, performer(O, X)), within(E, rightHolder(O, Y)), happens(E, T), holds_at(type(E, paidLate), T), holds_at(from(E, X), T), holds_at(to(E, Y), T), holds_at(amount(E, 1100), T).
-	disclosedSeller(E) 			:- so1(O), within(E, performer(O, X)), happens(E, T), holds_at(type(E, sellerDisclosed), T), holds_at(from(E, X), T).
-	disclosedBuyer(E) 			:- so2(O), within(E, performer(O, X)), happens(E, T), holds_at(type(E, buyerDisclosed), T), holds_at(from(E, X), T).	
+	delivered(E) 				:- happens(E, T), holds_at(type(E, delivered), T), holds_at(from(E, X), T), holds_at(item(E, meatPacked), T), holds_at(deliveryAddress(E, saintLaurent), T), holds_at(quality(meatPacked, aaa), T), instance(o1, O), within(E, performer(O, X)).
+	paid(E)						:- happens(E, T), holds_at(type(E, paid), T), holds_at(from(E, X), T), holds_at(to(E, Y), T), holds_at(amount(E, 1000), T), instance(o2, O), within(E, performer(O, X)), within(E, rightHolder(O, Y)).
+	paidLate(E) 				:- happens(E, T), holds_at(type(E, paidLate), T), holds_at(from(E, X), T), holds_at(to(E, Y), T), holds_at(amount(E, 1100), T), instance(o3, O), within(E, performer(O, X)), within(E, rightHolder(O, Y)).
+	disclosedSeller(E) 			:- happens(E, T), holds_at(type(E, sellerDisclosed), T), holds_at(from(E, X), T), instance(so1, O), within(E, performer(O, X)).
+	disclosedBuyer(E) 			:- happens(E, T), holds_at(type(E, buyerDisclosed), T), holds_at(from(E, X), T), instance(so2, O), within(E, performer(O, X)).	
 		
 ## Contract
 	initially(form(X)) 			:- initially(meatSale(X, _, _, _, _, _)).
@@ -62,14 +62,13 @@
 	# Obligations
 	#---------------------------------------------------------------------------
 	## define unconditional delivery obligation(i.e., oDel) as an instance of obligation 'o1'.
-	o(X) :- o1(X).
-	o1(oDel).
-	associate(oDel, cArgToCan).
+	o(X) 							:- instance(o1, X).
+	associate(X, cArgToCan)	    	:- instance(o1, X).
 	
-	initially(debtor(X, P)) 		:- o1(X), initially(bind(seller, P)).
-	initially(creditor(X, P)) 		:- o1(X), initially(bind(buyer, P)).
-	
-	initiates(E, trigger(oDel)) 	:- happens(E, _), initiates(E, inEffect(cArgToCan)). 
+	initiates(_, debtor(X, P)) 		:- instance(o1, X), initially(bind(seller, P)).
+	initiates(_, creditor(X, P)) 	:- instance(o1, X), initially(bind(buyer, P)).
+	 
+	initiates(E, trigger(o1, oDel)) :- initiates(E, inEffect(cArgToCan)). 
 	ant(oDel) 						:- true.	
 	initiates(E, cons(oDel)) 		:- happens(E, T), delivered(E), deliveryDueDate(T1), T<T1.
 	deadline(cons(oDel), Td) 		:- deliveryDueDate(Td).
@@ -77,104 +76,106 @@
 	happens(deliveryDuePassed, 10).
 	
 	## define unconditional payment obligation(i.e., oPay) as an instance of obligation 'o2'.
-	o(X) 							:- o2(X).
-	o2(oPay).
-	associate(oPay, cArgToCan).
+	o(X) 							:- instance(o2, X).
+	associate(X, cArgToCan)			:- instance(o2, X).
 	
-	initially(debtor(X, P)) 		:- o2(X), initially(bind(buyer, P)).
-	initially(creditor(X, P)) 		:- o2(X), initially(bind(seller, P)).
+	initiates(_, debtor(X, P)) 		:- instance(o2, X), initially(bind(buyer, P)).
+	initiates(_, creditor(X, P)) 	:- instance(o2, X), initially(bind(seller, P)).
 	
-	initiates(E, trigger(oPay))		:- happens(E, _), initiates(E, inEffect(cArgToCan)). 
-	ant(oPay) :- true.	
+	initiates(E, trigger(o2, oPay))	:- initiates(E, inEffect(cArgToCan)). 
+	ant(oPay) 						:- true.
 	initiates(E, cons(oPay)) 		:- happens(E, T), paid(E), paymentDueDate(Tp), T<Tp.
 	deadline(cons(oPay), Tp) 		:- paymentDueDate(Tp).
 	# assume payment due date is 7
 	happens(paymentDueDate, 7).
 	
 	## define unconditional late payment obligation(i.e., oLpay) as an instance of obligation 'o3'.
-	o(X) 							:- o3(X).
-	o3(oLpay).
-	associate(oLpay, cArgToCan).
+	o(X) 							:- instance(o3, X).
+	associate(X, cArgToCan)			:- instance(o3, X).
 	
-	initially(debtor(X, P)) 		:- o3(X), initially(bind(buyer, P)).
-	initially(creditor(X, P)) 		:- o3(X), initially(bind(seller, P)).
+	initiates(_, debtor(X, P)) 		:- instance(o3, X), initially(bind(buyer, P)).
+	initiates(_, creditor(X, P)) 	:- instance(o3, X), initially(bind(seller, P)).
 	
 	ant(oLpay)			 			:- true.
-	initiates(E, trigger(oLpay)) 	:- happens(E, _), initiates(E, violation(oPay)).
-	initiates(E, cons(oLpay)) 		:- happens(E, T), paidLate(E).
+	initiates(E, trigger(o3, oLpay)):- initiates(E, violation(oPay)).
+	initiates(E, cons(oLpay)) 		:- paidLate(E).	
 	# assume late payment due date is 100
+	deadline(cons(oLpay), 100).
 	happens(paymentDueDate, 100).
+	
 		
 	#---------------------------------------------------------------------------
 	# Powers
 	#---------------------------------------------------------------------------
 	## define unconditional delivery suspension power(i.e., pSusDelivery) as an instance of 'p1'.
-	p(X) 												:- p1(X).
-	p1(pSusDelivery).
-	associate(pSusDelivery, cArgToCan). 
+	p(X) 												:- instance(p1, X).
+	associate(X, cArgToCan)								:- instance(p1, X).
 	
-	initially(debtor(X, P)) 							:- p1(X), initially(bind(buyer, P)).
-	initially(creditor(X, P)) 							:- p1(X), initially(bind(seller, P)).
+	initiates(_, creditor(X, P)) 						:- instance(p1, X), initially(bind(seller, P)).
+	initiates(_, debtor(X, P)) 							:- instance(p1, X), initially(bind(buyer, P)).
 	
 	ant(pSusDelivery) 									:- true.
 	suspension(oDel) 									:- cons(pSusDelivery).
-	initiates(E, trigger(pSusDelivery)) 				:- happens(E, _), initiates(E, violation(oPay)).
+	initiates(E, trigger(p1, pSusDelivery)) 			:- initiates(E, violation(oPay)).
+
 	happens(exerted(pSusDelivery), T) 					:- happens(suspended(oDel), T).
+#	# assume delivery suspension due time is 100
+	deadline(cons(pSusDelivery), 100).
 	
 	## define unconditional delivery resumption power(i.e., pResDelivery) as an instance of 'p2'.
-	p(X) 												:- p2(X).
-	p2(pResDelivery).
-	associate(pResDelivery, cArgToCan). 
+	p(X) 												:- instance(p2, X).
+	associate(X, cArgToCan)								:- instance(p2, X).
 	
-	initially(debtor(X, P)) 							:- p2(X), initially(bind(seller, P)).
-	initially(creditor(X, P)) 							:- p2(X), initially(bind(buyer, P)).
+	initiates(_, creditor(X, P)) 						:- instance(p2, X), initially(bind(buyer, P)).
+	initiates(_, debtor(X, P)) 							:- instance(p2, X), initially(bind(seller, P)).
 	
 	ant(pResDelivery) 									:- true.
 	resumption(oDel) 									:- cons(pResDelivery).
-	initiates(E, trigger(pResDelivery)) 				:- happens(E, _), paidLate(E), within(E, suspension(oDel)).
+	initiates(E, trigger(p2, pResDelivery)) 			:- happens(E, _), paidLate(E), within(E, suspension(oDel)).
 	happens(exerted(pResDelivery), T) 					:- happens(resumed(oDel), T).
+	# assume delivery resumption due time is 100
+	deadline(cons(pResDelivery), 100).
 	
 	## define unconditional contract termination power(i.e., pTermContract) as an instance of 'p3'.
-	p(X) 												:- p3(X).
-	p3(pTermContract).
-	associate(pTermContract, cArgToCan). 
+	p(X) 												:- instance(p3, X).
+	associate(X, cArgToCan)								:- instance(p3, X).
 	
-	initially(debtor(X, P)) 							:- p3(X), initially(bind(seller, P)).
-	initially(creditor(X, P)) 							:- p3(X), initially(bind(buyer, P)).
+	initiates(_, creditor(X, P)) 						:- instance(p3, X), initially(bind(buyer, P)).
+	initiates(_, debtor(X, P)) 							:- instance(p3, X), initially(bind(seller, P)).
 	
 	ant(pTermContract) 									:- true.
 	unsuccessfulTermination(cArgToCan) 					:- cons(pTermContract).
-	happens(passedDelDue, 20).
-	initiates(passedDelDue, trigger(pTermContract)) 	:- \+(happens(E, T1), delivered(E)), happens(passedDelDue, T2).
+#	initiates(deliveryDuePassed, trigger(p3, pTermContract)) :- \+(happens(E, T1), delivered(E)), happens(deliveryDuePassed, T2).
+	initiates(E, trigger(p3, pTermContract)) 			:- initiates(E, violation(oDel)).
 	happens(exerted(pTermContract), T) 					:- happens(terminated(cArgToCan), T).
+	# assume contract termination due time is 100
+	deadline(cons(pTermContract), 100).
 
 	#---------------------------------------------------------------------------
 	# Surviving Obligations
 	#---------------------------------------------------------------------------
 	## define unconditional surviving obligation(i.e., soSellerDisclosure) as an instance of 'so1'.
-	so(X) 												:- so1(X).
-	so1(soSellerDisclosure).
-	associate(soSellerDisclosure, cArgToCan). 
+#	so(X) 												:- instance(so1, X).
+#	associate(X, cArgToCan)								:- instance(so1, X).
 	
-	initially(debtor(X, P)) 							:- so1(X), initially(bind(seller, P)).
-	initially(creditor(X, P)) 							:- so1(X), initially(bind(buyer, P)).
+#	initiates(_, debtor(X, P)) 							:- instance(so1, X), initially(bind(seller, P)).
+#	initiates(_, creditor(X, P)) 						:- instance(so1, X), initially(bind(buyer, P)).
 	
-	ant(soSellerDisclosure) 							:- true.
-	deadline(cons(soSellerDisclosure), 180).
-	initiates(E, trigger(soSellerDisclosure)) 			:- happens(E, _), initiates(E, inEffect(cArgToCan)).
-	happens(passedConfDue, 180).
-	initiates(passedConfDue, cons(soSellerDisclosure)) 	:- \+(happens(E, T1), disclosedSeller(E)), happens(passedConfDue, T2).
+#	ant(soSellerDisclosure) 							:- true.
+#	deadline(cons(soSellerDisclosure), 180).
+#	initiates(E, trigger(so1, soSellerDisclosure)) 		:- happens(E, _), initiates(E, inEffect(cArgToCan)).
+#	happens(passedConfDue, 180).
+#	initiates(passedConfDue, cons(soSellerDisclosure)) 	:- \+(happens(E, T1), disclosedSeller(E)), happens(passedConfDue, T2).
 	
 	## define unconditional surviving obligation(i.e., soBuyerDisclosure) as an instance of 'so2'.
-	so(X) 												:- so2(X).
-	so2(soBuyerDisclosure).	
-	associate(soBuyerDisclosure, cArgToCan). 
+#	so(X) 												:- instance(so2, X).
+#	associate(X, cArgToCan)								:- instance(so2, X).
 	
-	initially(debtor(X, P)) 							:- so2(X), initially(bind(buyer, P)).
-	initially(creditor(X, P)) 							:- so2(X), initially(bind(seller, P)).
+#	initiates(_, debtor(X, P)) 							:- instance(so2, X), initially(bind(buyer, P)).
+#	initiates(_, creditor(X, P)) 						:- instance(so2, X), initially(bind(seller, P)).
 	
-	ant(soBuyerDisclosure) 								:- true.
-	deadline(cons(soBuyerDisclosure), 180).
-	initiates(E, trigger(soBuyerDisclosure)) 			:- happens(E, _), initiates(E, inEffect(cArgToCan)).
-	happens(passedConfDue, 180).
-	initiates(passedConfDue, cons(soBuyerDisclosure)) 	:- \+(happens(E, T1), disclosedBuyer(E)), happens(passedConfDue, T2).
+#	ant(soBuyerDisclosure) 								:- true.
+#	deadline(cons(soBuyerDisclosure), 180).
+#	initiates(E, trigger(so2, soBuyerDisclosure)) 		:- happens(E, _), initiates(E, inEffect(cArgToCan)).
+#	happens(passedConfDue, 180).
+#	initiates(passedConfDue, cons(soBuyerDisclosure)) 	:- \+(happens(E, T1), disclosedBuyer(E)), happens(passedConfDue, T2).
