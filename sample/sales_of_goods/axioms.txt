@@ -17,8 +17,8 @@ initiates(exerted(X), unsuccessfulTermination(Y)) :- p(X), c(Y), associate(X, Y)
 terminates(exerted(X), inEffect(Y)) 			  :- p(X), c(Y), associate(X, Y), clause(unsuccessfulTermination(Y), cons(X)), within(exerted(X), inEffect(X)), within(exerted(X), active(Y)).
 
 # terminate a contract successfully
-initiates(E, successfulTermination(X)) :- c(X), o(Z), associate(Z, X), happens(E, T), declip(fulfillment(Z), T), within(E, inEffect(X)), not((o(Y), associate(Y, X), Y\==Z, not(so(Y)), within(E, active(Y)))).
-terminates(E, inEffect(X)) 			   :- c(X), o(Z), associate(Z, X), happens(E, T), declip(fulfillment(Z), T), within(E, inEffect(X)), not((o(Y), associate(Y, X), Y\==Z, not(so(Y)), within(E, active(Y)))).
+initiates(E, successfulTermination(X)) :- c(X), o(Z), associate(Z, X), happens(E, T), initiates(fulfillment(Z), T), within(E, inEffect(X)), not((o(Y), associate(Y, X), Y\==Z, not(so(Y)), within(E, active(Y)))).
+terminates(E, inEffect(X)) 			   :- c(X), o(Z), associate(Z, X), happens(E, T), initiates(fulfillment(Z), T), within(E, inEffect(X)), not((o(Y), associate(Y, X), Y\==Z, not(so(Y)), within(E, active(Y)))).
 
 #-------------------------------------------------------------------------------------------
 # Obligation Axioms
