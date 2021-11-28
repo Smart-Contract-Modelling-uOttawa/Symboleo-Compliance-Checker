@@ -1,5 +1,10 @@
 # Symboleo Compliance Checker
 [![DOI](https://zenodo.org/badge/263669871.svg)](https://zenodo.org/badge/latestdoi/263669871)
+
+[Video link](https://youtu.be/kej6JNwVumk)
+
+[Publications link](https://sites.google.com/d/1ZRxGZ5SOQxevA_g_30OBwhFcCb24U-0G/p/1hfvgq2pXeFr-LG4o1w4hCA9wXaqOUCzI/edit)
+
 ## What is Symboleo?
 Symboleo is a formal specification language for legal contracts. It describes contracts in terms of contractual norms such as obligations, powers, etc.  Symboleo is an event-based language that inherits event-calculus predicates to specify normsin terms of situations. Contractual norms evolve over time according to events occurring at time points specified in the language. In other words, internal (e.g., deadlines) and external events (e.g., payments) may change the state of the norms during time. Three state machines represent the evolution semantics of norms while corresponding formal specifications have been axiomatized in the Axiom.txt file and the tutorial document. The state machines are given in our accepted paper titled "Symboleo: Towards a Specification Language for Legal Contracts".
 
