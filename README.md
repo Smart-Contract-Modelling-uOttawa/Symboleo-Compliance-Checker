@@ -97,5 +97,5 @@ For example, the below scenario drafts `cArgToCan` meatSale contract between `ea
 
 ## Current State
 The tool is able to:
-- Specify and instantiate multiple contracts, conditional/unconditional powers and obligations in a hierarchical structure.\
+- Specify and instantiate multiple contracts, conditional/unconditional powers and obligations in a hierarchical structure.
 - Provide a list of compliance scenarios for positive scenarios. These scenarios check situations that must be true after running a trace of events.
