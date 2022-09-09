@@ -2,8 +2,8 @@
 
 [![DOI](https://zenodo.org/badge/263669871.svg)](https://zenodo.org/badge/latestdoi/263669871)
 
-[![infiwatch](./images/SymboleoPC.png)]([https://www.youtube.com/watch?v=zkk19RiKsJk](https://youtu.be/kej6JNwVumk))
-
+[<img src="./images/SymboleoPC.png"  height="300" align="center">](https://youtu.be/kej6JNwVumk)
+	
 :bookmark_tabs: [Symboleo: Towards a specification language for legal contracts](http://www.eiti.uottawa.ca/~luigi/papers/20_RE.pdf)
 
 :bookmark_tabs: [Subcontracting, assignment, and substitution for legal contracts in symboleo](https://site.uottawa.ca/~luigi/papers/20_ER.pdf)
